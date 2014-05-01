@@ -1,48 +1,40 @@
-// I2Cdev library collection - ADS1115 I2C device class header file
-// Based on Texas Instruments ADS1113/4/5 datasheet, May 2009 (SBAS444B, revised October 2009)
-// Note that the ADS1115 uses 16-bit registers, not 8-bit registers.
-// 8/2/2011 by Jeff Rowberg <jeff@rowberg.net>
-// Updates should (hopefully) always be available at https://github.com/jrowberg/i2cdevlib
-//
-// Changelog:
-//     2013-05-05 - Add debug information.  Clean up Single Shot implementation
-//     2011-10-29 - added getDifferentialx() methods, F. Farzanegan
-//     2011-08-02 - initial release
+/*
+ADS1115 driver code is placed under the BSD license.
+Copyright (c) 2014, Emlid Limited, www.emlid.com
+Written by Georgii Staroselskii
+All rights reserved.
 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the Emlid Limited nor the names of its contributors 
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
 
-/* ============================================
-I2Cdev device library code is placed under the MIT license
-Copyright (c) 2011 Jeff Rowberg
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-===============================================
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL EMLID LIMITED BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #ifndef _ADS1115_H_
 #define _ADS1115_H_
 
-#include "I2Cdev.h"
-
-// -----------------------------------------------------------------------------
-// Arduino-style "Serial.print" debug constant (uncomment to enable)
-// -----------------------------------------------------------------------------
-//#define ADS1115_SERIAL_DEBUG
+#ifdef DEBUG_ADS1115
+#define debug(M, ...) fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#else 
+#define debug(M, ...)
+#endif
 
 #define ADS1115_ADDRESS_ADDR_GND    0x48 // address pin low (GND)
 #define ADS1115_ADDRESS_ADDR_VDD    0x49 // address pin high (VCC)
@@ -55,40 +47,29 @@ THE SOFTWARE.
 #define ADS1115_RA_LO_THRESH        0x02
 #define ADS1115_RA_HI_THRESH        0x03
 
-#define ADS1115_CFG_OS_BIT          15
-#define ADS1115_CFG_MUX_BIT         14
-#define ADS1115_CFG_MUX_LENGTH      3
-#define ADS1115_CFG_PGA_BIT         11
-#define ADS1115_CFG_PGA_LENGTH      3
-#define ADS1115_CFG_MODE_BIT        8
-#define ADS1115_CFG_DR_BIT          7
-#define ADS1115_CFG_DR_LENGTH       3
-#define ADS1115_CFG_COMP_MODE_BIT   4
-#define ADS1115_CFG_COMP_POL_BIT    3
-#define ADS1115_CFG_COMP_LAT_BIT    2
-#define ADS1115_CFG_COMP_QUE_BIT    1
-#define ADS1115_CFG_COMP_QUE_LENGTH 2
+#define ADS1115_OS_SHIFT			15
+#define ADS1115_OS_INACTIVE         0x00 << ADS1115_OS_SHIFT
+#define ADS1115_OS_ACTIVE           0x01 << ADS1115_OS_SHIFT
 
-#define ADS1115_OS_INACTIVE         0x00
-#define ADS1115_OS_ACTIVE           0x01
+#define ADS1115_MUX_SHIFT			12		
+#define ADS1115_MUX_P0_N1           0x00 << ADS1115_MUX_SHIFT /* default */
+#define ADS1115_MUX_P0_N3           0x01 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P1_N3           0x02 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P2_N3           0x03 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P0_NG           0x04 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P1_NG           0x05 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P2_NG           0x06 << ADS1115_MUX_SHIFT
+#define ADS1115_MUX_P3_NG           0x07 << ADS1115_MUX_SHIFT
 
-#define ADS1115_MUX_P0_N1           0x00 // default
-#define ADS1115_MUX_P0_N3           0x01
-#define ADS1115_MUX_P1_N3           0x02
-#define ADS1115_MUX_P2_N3           0x03
-#define ADS1115_MUX_P0_NG           0x04
-#define ADS1115_MUX_P1_NG           0x05
-#define ADS1115_MUX_P2_NG           0x06
-#define ADS1115_MUX_P3_NG           0x07
-
-#define ADS1115_PGA_6P144           0x00
-#define ADS1115_PGA_4P096           0x01
-#define ADS1115_PGA_2P048           0x02 // default
-#define ADS1115_PGA_1P024           0x03
-#define ADS1115_PGA_0P512           0x04
-#define ADS1115_PGA_0P256           0x05
-#define ADS1115_PGA_0P256B          0x06
-#define ADS1115_PGA_0P256C          0x07
+#define ADS1115_PGA_SHIFT			9
+#define ADS1115_PGA_6P144           0x00 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_4P096           0x01 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_2P048           0x02 << ADS1115_PGA_SHIFT // default
+#define ADS1115_PGA_1P024           0x03 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_0P512           0x04 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_0P256           0x05 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_0P256B          0x06 << ADS1115_PGA_SHIFT
+#define ADS1115_PGA_0P256C          0x07 << ADS1115_PGA_SHIFT
 
 #define ADS1115_MV_6P144            0.187500
 #define ADS1115_MV_4P096            0.125000
@@ -99,103 +80,87 @@ THE SOFTWARE.
 #define ADS1115_MV_0P256B           0.007813 
 #define ADS1115_MV_0P256C           0.007813
 
-#define ADS1115_MODE_CONTINUOUS     0x00
-#define ADS1115_MODE_SINGLESHOT     0x01 // default
+#define ADS1115_MODE_SHIFT			8
+#define ADS1115_MODE_CONTINUOUS     0x00 << ADS1115_MODE_SHIFT
+#define ADS1115_MODE_SINGLESHOT     0x01 << ADS1115_MODE_SHIFT // default
 
-#define ADS1115_RATE_8              0x00
-#define ADS1115_RATE_16             0x01
-#define ADS1115_RATE_32             0x02
-#define ADS1115_RATE_64             0x03
-#define ADS1115_RATE_128            0x04 // default
-#define ADS1115_RATE_250            0x05
-#define ADS1115_RATE_475            0x06
-#define ADS1115_RATE_860            0x07
+#define ADS1115_RATE_SHIFT			5
+#define ADS1115_RATE_8              0x00 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_16             0x01 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_32             0x02 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_64             0x03 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_128            0x04 << ADS1115_RATE_SHIFT // default
+#define ADS1115_RATE_250            0x05 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_475            0x06 << ADS1115_RATE_SHIFT
+#define ADS1115_RATE_860            0x07 << ADS1115_RATE_SHIFT
 
-#define ADS1115_COMP_MODE_HYSTERESIS    0x00 // default
-#define ADS1115_COMP_MODE_WINDOW        0x01
+#define ADS1115_COMP_MODE_SHIFT			4
+#define ADS1115_COMP_MODE_HYSTERESIS    0x00 << ADS1115_COMP_MODE_SHIFT		// default
+#define ADS1115_COMP_MODE_WINDOW        0x01 << ADS1115_COMP_MODE_SHIFT
 
-#define ADS1115_COMP_POL_ACTIVE_LOW     0x00 // default
-#define ADS1115_COMP_POL_ACTIVE_HIGH    0x01
+#define ADS1115_COMP_POL_SHIFT			3	
+#define ADS1115_COMP_POL_ACTIVE_LOW     0x00 << ADS1115_COMP_POL_SHIFT	 // default
+#define ADS1115_COMP_POL_ACTIVE_HIGH    0x01 << ADS1115_COMP_POL_SHIFT	 		
 
-#define ADS1115_COMP_LAT_NON_LATCHING   0x00 // default
-#define ADS1115_COMP_LAT_LATCHING       0x01
+#define ADS1115_COMP_LAT_SHIFT			2
+#define ADS1115_COMP_LAT_NON_LATCHING   0x00 << ADS1115_COMP_LAT_SHIFT	// default
+#define ADS1115_COMP_LAT_LATCHING       0x01 << ADS1115_COMP_LAT_SHIFT		
 
-#define ADS1115_COMP_QUE_ASSERT1    0x00
-#define ADS1115_COMP_QUE_ASSERT2    0x01
-#define ADS1115_COMP_QUE_ASSERT4    0x02
+#define ADS1115_COMP_QUE_SHIFT		0
+#define ADS1115_COMP_QUE_ASSERT1    0x00 << ADS1115_COMP_SHIFT
+#define ADS1115_COMP_QUE_ASSERT2    0x01 << ADS1115_COMP_SHIFT
+#define ADS1115_COMP_QUE_ASSERT4    0x02 << ADS1115_COMP_SHIFT
 #define ADS1115_COMP_QUE_DISABLE    0x03 // default
 
-// -----------------------------------------------------------------------------
-// Arduino-style "Serial.print" debug constant (uncomment to enable)
-// -----------------------------------------------------------------------------
-//#define ADS1115_SERIAL_DEBUG
-
+#include "I2Cdev.h"
 
 class ADS1115 {
     public:
-        ADS1115();
         ADS1115(uint8_t address);
+        ADS1115();
+        ~ADS1115();
         
-        void initialize();
-        bool testConnection();
-        
-        // SINGLE SHOT utilities
-        void waitBusy(uint16_t max_retries);
-
-        // Read the current CONVERSION register
         int16_t getConversion();
-        
-        // Differential
-        int16_t getConversionP0N1();
-        int16_t getConversionP0N3();
-        int16_t getConversionP1N3();
-        int16_t getConversionP2N3();
-        
-        // Single-ended
-        int16_t getConversionP0GND();
-        int16_t getConversionP1GND();
-        int16_t getConversionP2GND();
-        int16_t getConversionP3GND();
+		
+        void setOpStatus(uint16_t op);
 
-        // Utility
-        float getMilliVolts(); 
-        float getMvPerCount();
+        uint16_t getMultiplexer();
+        void setMultiplexer(uint16_t mux);
 
-        // CONFIG register
-        uint8_t getOpStatus();
-        void setOpStatus(uint8_t op);
-        uint8_t getMultiplexer();
-        void setMultiplexer(uint8_t mux);
-        uint8_t getGain();
-        void setGain(uint8_t gain);
-        uint8_t getMode();
-        void setMode(uint8_t mode);
-        uint8_t getRate();
-        void setRate(uint8_t rate);
-        uint8_t getComparatorMode();
-        void setComparatorMode(uint8_t mode);
-        uint8_t getComparatorPolarity();
-        void setComparatorPolarity(uint8_t polarity);
-        bool getComparatorLatchEnabled();
-        void setComparatorLatchEnabled(bool enabled);
-        uint8_t getComparatorQueueMode();
-        void setComparatorQueueMode(uint8_t mode);
+        uint16_t getGain();
+        void setGain(uint16_t gain);
 
-        // *_THRESH registers
-        int16_t getLowThreshold();
-        void setLowThreshold(int16_t threshold);
-        int16_t getHighThreshold();
-        void setHighThreshold(int16_t threshold);
-        
-        // DEBUG
-        void showConfigRegister();
+        uint16_t getMode();
+        void setMode(uint16_t mode);
+
+        uint16_t getRate();
+        void setRate(uint16_t rate);
+
+		float getMilliVolts();
+
+		void setComparatorMode(uint16_t comparatorMode);
+		void setComparatorPolarity(uint16_t polarit);
+		void setComparatorLatchEnabled(uint16_t latchStatus);
+		void setComparatorQueueMode(uint16_t queueMode);
 
     private:
-        uint8_t devAddr;
-        uint16_t buffer[2];
-        uint8_t devMode;
-        uint8_t muxMode;
-        uint8_t pgaMode;
+		void updateConfigRegister();
+
+		uint8_t address;
+
+		struct configRegister {
+			uint16_t status;
+			uint16_t mux;
+			uint16_t gain;
+			uint16_t mode;
+			uint16_t rate;
+			uint16_t comparator;
+			uint16_t polarity;
+			uint16_t latch;
+			uint16_t queue;
+		} config;
+
+        void showConfigRegister();
 };
 
 #endif /* _ADS1115_H_ */
