@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-c -Wall
+CC='g++'
+CFLAGS=-c -Wall 
     
 Demo: I2Cdev.o PCA9685.o MS5611.o ADS1115.o AK8975.o MPU9150.o Demo.o
 	$(CC) I2Cdev.o PCA9685.o MS5611.o ADS1115.o AK8975.o MPU9150.o Demo.o -o Demo
@@ -33,6 +33,9 @@ Demo.o: Demo.cpp
 
 LED.o: LED.cpp
 	$(CC) $(CFLAGS) LED.cpp 
+
+ADC.o: ADC.cpp
+	$(CC) $(CFLAGS) ADC.cpp 
 	
 Servo.o: Servo.cpp
 	$(CC) $(CFLAGS) Servo.cpp  
