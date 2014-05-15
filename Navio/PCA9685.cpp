@@ -10,7 +10,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -51,7 +51,7 @@ PCA9685::PCA9685(uint8_t address) {
 void PCA9685::initialize() {
     frequency = getFrequency();
     I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_AI_BIT, 1);
-    restart();   
+    restart();
 }
 
 /** Verify the I2C connection.
@@ -74,8 +74,8 @@ void PCA9685::sleep() {
  * @see PCA9685_MODE1_RESTART_BIT
  */
 void PCA9685::restart() {
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 0);  
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_RESTART_BIT, 1);   
+    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 0);
+    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_RESTART_BIT, 1);
 }
 
 /** Calculate prescale value based on the specified frequency and write it to the device.
@@ -99,7 +99,7 @@ void PCA9685::setFrequency(float frequency) {
     uint8_t prescale = roundf(25000000.f / 4096.f / frequency)  - 1;
     I2Cdev::writeByte(devAddr, PCA9685_RA_PRE_SCALE, prescale);
     this->frequency = getFrequency();
-    restart();                
+    restart();
 }
 
 /** Set channel start offset of the pulse and it's length
@@ -122,13 +122,22 @@ void PCA9685::setPWM(uint8_t channel, uint16_t length) {
     setPWM(channel, 0, length);
 }
 
+/** Set channel's pulse length in milliseconds
+ * @param Channel number (0-15)
+ * @param Length in milliseconds
+ * @see PCA9685_RA_LED0_ON_L
+ */
+void PCA9685::setPWMmS(uint8_t channel, float length_mS) {
+    setPWM(channel, round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+}
+
 /** Set channel's pulse length in microseconds
  * @param Channel number (0-15)
  * @param Length in microseconds
  * @see PCA9685_RA_LED0_ON_L
  */
-void PCA9685::setPWMmS(uint8_t channel, float length_mS) {	
-    setPWM(channel, round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
+    setPWM(channel, round((length_uS * 4096.f) / (1000000.f / frequency) - 1));
 }
 
 /** Set start offset of the pulse and it's length for all channels
@@ -149,10 +158,18 @@ void PCA9685::setAllPWM(uint16_t length) {
     setAllPWM(0, length);
 }
 
+/** Set pulse length in milliseconds for all channels
+ * @param Length in milliseconds
+ * @see PCA9685_RA_ALL_LED_ON_L
+ */
+void PCA9685::setAllPWMmS(float length_mS) {
+    setAllPWM(round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+}
+
 /** Set pulse length in microseconds for all channels
  * @param Length in microseconds
  * @see PCA9685_RA_ALL_LED_ON_L
  */
-void PCA9685::setAllPWMmS(float length_mS) {	
-    setAllPWM(round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+void PCA9685::setAllPWMuS(float length_uS) {
+    setAllPWM(round((length_uS * 4096.f) / (1000000.f / frequency) - 1));
 }

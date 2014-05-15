@@ -10,7 +10,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -39,10 +39,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PCA9685_DEFAULT_ADDRESS     0x40 // All address pins low, Navio default
 
 #define PCA9685_RA_MODE1            0x00
-#define PCA9685_RA_MODE2            0x01	
-#define PCA9685_RA_LED0_ON_L        0x06	
-#define PCA9685_RA_LED0_ON_H        0x07	
-#define PCA9685_RA_LED0_OFF_L       0x08	
+#define PCA9685_RA_MODE2            0x01
+#define PCA9685_RA_LED0_ON_L        0x06
+#define PCA9685_RA_LED0_ON_H        0x07
+#define PCA9685_RA_LED0_OFF_L       0x08
 #define PCA9685_RA_LED0_OFF_H       0x09
 #define PCA9685_RA_ALL_LED_ON_L     0xFA
 #define PCA9685_RA_ALL_LED_ON_H     0xFB
@@ -67,29 +67,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class PCA9685 {
     public:
-	    PCA9685();
+        PCA9685();
         PCA9685(uint8_t address);
-        
+
         void initialize();
         bool testConnection();
-        
+
         float getFrequency();
         void setFrequency(float frequency);
-        
+
         void sleep();
         void restart();
-        
+
         void setPWM(uint8_t channel, uint16_t offset, uint16_t length);
         void setPWM(uint8_t channel, uint16_t length);
         void setPWMmS(uint8_t channel, float length_mS);
-        
+        void setPWMuS(uint8_t channel, float length_uS);
+
         void setAllPWM(uint16_t offset, uint16_t length);
         void setAllPWM(uint16_t length);
         void setAllPWMmS(float length_mS);
-        
-    private:
-	    uint8_t devAddr;
-	    float frequency;
+        void setAllPWMuS(float length_uS);
+
+     private:
+        uint8_t devAddr;
+        float frequency;
 };
 
 #endif // PCA9685_ HPP

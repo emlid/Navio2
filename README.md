@@ -1,4 +1,4 @@
 Navio
 =====
 
-Collection of drivers and examples for Navio shield for Raspberry Pi
+Collection of drivers and examples for Navio - autopilot shield for Raspberry Pi.

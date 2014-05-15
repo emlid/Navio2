@@ -1,11 +1,12 @@
 /*
-Example: Get pressure from MS5611 barometer onboard of Navio shield for Rapspberry Pi
+Provided to you by Emlid Ltd (c) 2014.
+twitter.com/emlidtech || www.emlid.com || info@emlid.com
+
+Example: Get pressure from MS5611 barometer onboard of Navio shield for Raspberry Pi
 
 To run this example navigate to the directory containing it and run following commands:
-make Barometer
+make
 ./Barometer
-
-Provided to you by Emlid Ltd, www.emlid.com, info@emlid.com
 */
 
 #include "Navio/MS5611.h"
@@ -14,23 +15,23 @@ Provided to you by Emlid Ltd, www.emlid.com, info@emlid.com
 
 int main()
 {
-    MS5611 baro(MS5611_ADDRESS_CSB_HIGH);    
+    MS5611 baro(MS5611_ADDRESS_CSB_HIGH);
     baro.initialize();
-    
+
     while (true) {
         baro.refreshPressure();
         usleep(10000); // Waiting for pressure data ready
         baro.readPressure();
-	
-        baro.refreshTemperature();		
+
+        baro.refreshTemperature();
         usleep(10000); // Waiting for temperature data ready
         baro.readTemperature();
-	
-        baro.calculatePressureAndTemperature();  
-        
+
+        baro.calculatePressureAndTemperature();
+
         printf("Temperature(C): %f Pressure(millibar): %f\n", baro.getTemperature(), baro.getPressure());
         sleep(1);
     }
-    
+
     return 0;
 }
