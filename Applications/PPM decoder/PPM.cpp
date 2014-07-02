@@ -18,10 +18,11 @@ sudo ./PPM
 
 //================================ Options =====================================
 
-unsigned int samplingRate      = 5;      // 5 microseconds
+unsigned int samplingRate      = 1;      // 1 microsecond (can be 1,2,4,5,10)
 unsigned int ppmInputGpio      = 4;      // PPM input on Navio's 2.54 header
 unsigned int ppmSyncLength     = 4000;   // Length of PPM sync pause
 unsigned int ppmChannelsNumber = 8;      // Number of channels packed in PPM
+undigned int servoFrequency    = 50;     // Servo control frequency
 bool verboseOutputEnabled      = true;   // Output channels values to console
 
 //============================ Objects & data ==================================
@@ -46,7 +47,7 @@ void ppmOnEdge(int gpio, int level, uint32_t tick)
 
 			// RC output
 			for (int i = 0; i < ppmChannelsNumber; i++)
-			    pwm->setPWMuS(i + 3, channels[i]); // First Navio RC output is 3
+			    pwm->setPWMuS(i + 3, channels[i]); // 1st Navio RC output is 3
 
 			// Console output
 			if (verboseOutputEnabled) {
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
 
 	pwm = new PCA9685();
 	pwm->initialize();
-	pwm->setFrequency(100);
+	pwm->setFrequency(servoFrequency);
 
 	// GPIO setup
 
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
 	previousTick = gpioTick();
 	gpioSetAlertFunc(ppmInputGpio, ppmOnEdge);
 
-	// Infinite sleep - all action in now happening in ppmOnEdge() function
+	// Infinite sleep - all action is now happening in ppmOnEdge() function
 
 	while(1)
 		sleep(10);
