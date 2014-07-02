@@ -1,5 +1,6 @@
 /*
 PCA9685 driver code is placed under the BSD license.
+Written by Mikhail Avkhimenia (mikhail.avkhimenia@emlid.com)
 Copyright (c) 2014, Emlid Limited
 All rights reserved.
 

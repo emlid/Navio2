@@ -10,7 +10,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -65,22 +65,22 @@ class MS5611 {
     public:
         MS5611();
 	    MS5611(uint8_t address);
-        
-        void initialize();    
+
+        void initialize();
         bool testConnection();
-        
+
 	    void refreshPressure(uint8_t OSR = MS5611_RA_D1_OSR_4096);
 	    void readPressure();
 
 	    void refreshTemperature(uint8_t OSR = MS5611_RA_D1_OSR_4096);
 	    void readTemperature();
-	    
+
 	    void calculatePressureAndTemperature();
 	    void update();
 
 	    float getTemperature();
 	    float getPressure();
-	    
+
     private:
 	    uint8_t devAddr; // I2C device adress
 	    uint16_t C1, C2, C3, C4, C5, C6; // Calibration data
