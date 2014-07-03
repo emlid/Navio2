@@ -112,7 +112,7 @@ bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
     set_acc_scale(BITS_FS_16G);
     set_gyro_scale(BITS_FS_2000DPS);
 
-    //calib_mag();  //Can't load this function here , strange problem?
+    calib_mag();
     return 0;
 }
 /*-----------------------------------------------------------------------------------------------

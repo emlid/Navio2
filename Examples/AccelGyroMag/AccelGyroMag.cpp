@@ -23,7 +23,6 @@ int main()
 
 	MPU9250 imu;
 	imu.initialize();
-    imu.calib_mag();
 
 	float ax, ay, az, gx, gy, gz, mx, my, mz;
 

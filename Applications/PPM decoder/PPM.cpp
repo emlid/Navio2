@@ -1,6 +1,7 @@
 /*
 This code is provided under the BSD license.
 Copyright (c) 2014, Emlid Limited. All rights reserved.
+Written by Mikhail Avkhimenia (mikhail.avkhimenia@emlid.com)
 twitter.com/emlidtech || www.emlid.com || info@emlid.com
 
 Application: PPM to PWM decoder for Raspberry Pi with Navio.
