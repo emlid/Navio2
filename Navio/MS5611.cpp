@@ -10,7 +10,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -28,19 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MS5611.h"
 
-/** Default constructor, uses default I2C address.
- * @see MS5611_DEFAULT_ADDRESS
- */
-MS5611::MS5611() {
-    devAddr = MS5611_DEFAULT_ADDRESS;
-}
-
-/** Specific address constructor.
+/** MS5611 constructor.
  * @param address I2C address
  * @see MS5611_DEFAULT_ADDRESS
  */
-MS5611::MS5611(uint8_t address) {
-    devAddr = address;
+MS5611::MS5611(const char *i2cDev, uint8_t address) {
+    this->i2cDev = std::string(i2cDev);
+    this->devAddr = address;
 }
 
 /** Power on and prepare for general usage.
@@ -49,17 +43,17 @@ MS5611::MS5611(uint8_t address) {
 void MS5611::initialize() {
     // Reading 6 calibration data values
     uint8_t buff[2];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C1, 2, buff);	
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C1, 2, buff);
     C1 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C2, 2, buff);
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C2, 2, buff);
     C2 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C3, 2, buff);
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C3, 2, buff);
     C3 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C4, 2, buff);
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C4, 2, buff);
     C4 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C5, 2, buff);
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C5, 2, buff);
     C5 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(devAddr, MS5611_RA_C6, 2, buff);
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C6, 2, buff);
     C6 = buff[0]<<8 | buff[1];
 
     update();
@@ -70,39 +64,39 @@ void MS5611::initialize() {
  */
 bool MS5611::testConnection() {
     uint8_t data;
-    return I2Cdev::readByte(devAddr, MS5611_RA_ADC, &data);
+    return I2Cdev::readByte(i2cDev.c_str(), devAddr, MS5611_RA_ADC, &data);
 }
-	
+
 /** Initiate the process of pressure measurement
  * @param OSR value
  * @see MS5611_RA_D1_OSR_4096
  */
 void MS5611::refreshPressure(uint8_t OSR) {
-    I2Cdev::writeBytes(devAddr, OSR, 0, 0);
+    I2Cdev::writeBytes(i2cDev.c_str(), devAddr, OSR, 0, 0);
 }
 
 /** Read pressure value
  */
 void MS5611::readPressure() {
-    // 
+    //
     uint8_t buffer[3];
-    I2Cdev::readBytes(devAddr, MS5611_RA_ADC, 3, buffer);
-    D1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2]; 
+    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_ADC, 3, buffer);
+    D1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
 }
 
 /** Initiate the process of temperature measurement
  * @param OSR value
  * @see MS5611_RA_D2_OSR_4096
  */
-void MS5611::refreshTemperature(uint8_t OSR) {	
-	I2Cdev::writeBytes(devAddr, OSR, 0, 0);
+void MS5611::refreshTemperature(uint8_t OSR) {
+	I2Cdev::writeBytes(i2cDev.c_str(), devAddr, OSR, 0, 0);
 }
 
 /** Read temperature value
  */
 void MS5611::readTemperature() {
 	uint8_t buffer[3];
-	I2Cdev::readBytes(devAddr, MS5611_RA_ADC, 3, buffer);
+	I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_ADC, 3, buffer);
 	D2 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
 }
 
@@ -110,30 +104,30 @@ void MS5611::readTemperature() {
  *  More info about these calculations is available in the datasheet.
  */
 void MS5611::calculatePressureAndTemperature() {
-    float dT = D2 - C5 * pow(2, 8); 
-    TEMP = (2000 + ((dT * C6) / pow(2, 23)));	
-    float OFF = C2 * pow(2, 16) + (C4 * dT) / pow(2, 7); 
-    float SENS = C1 * pow(2, 15) + (C3 * dT) / pow(2, 8); 
+    float dT = D2 - C5 * pow(2, 8);
+    TEMP = (2000 + ((dT * C6) / pow(2, 23)));
+    float OFF = C2 * pow(2, 16) + (C4 * dT) / pow(2, 7);
+    float SENS = C1 * pow(2, 15) + (C3 * dT) / pow(2, 8);
 
     float T2, OFF2, SENS2;
 
     if (TEMP >= 2000)
-    {			
+    {
         T2 = 0;
         OFF2 = 0;
         SENS2 = 0;
     }
     if (TEMP < 2000 && TEMP >= -1500)
-    {		
+    {
         T2 = dT * dT / pow(2, 31);
         OFF2 = 5 * pow(TEMP - 2000, 2) / 2;
         SENS2 = OFF2 / 2;
     }
-    if (TEMP < -1500) 
-    {			
+    if (TEMP < -1500)
+    {
         OFF2 = OFF2 + 7 * pow(TEMP + 1500, 2);
         SENS2 = SENS2 + 11 * pow(TEMP + 1500, 2) / 2;
-    }	
+    }
 
     TEMP = TEMP - T2;
     OFF = OFF - OFF2;
@@ -147,15 +141,15 @@ void MS5611::calculatePressureAndTemperature() {
 /** Perform pressure and temperature reading and calculation at once.
  *  Contains sleeps, better perform operations separately.
  */
-void MS5611::update() {		
+void MS5611::update() {
     refreshPressure();
     usleep(10000); // Waiting for pressure data ready
     readPressure();
-	
-    refreshTemperature();		
+
+    refreshTemperature();
     usleep(10000); // Waiting for temperature data ready
     readTemperature();
-	
+
     calculatePressureAndTemperature();
 }
 

@@ -15,7 +15,9 @@ make
 
 int main()
 {
-    MS5611 baro(MS5611_ADDRESS_CSB_HIGH);
+    MS5611 baro(RASPBERRY_PI_MODEL_B_I2C, MS5611_DEFAULT_ADDRESS);
+    // MS5611 baro(RASPBERRY_PI_MODEL_A_I2C, MS5611_DEFAULT_ADDRESS);
+
     baro.initialize();
 
     while (true) {

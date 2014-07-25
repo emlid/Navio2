@@ -1,10 +1,10 @@
-// I2Cdev library collection - Main I2C device class
+// i2cDev library collection - Main I2C device class
 // Abstracts bit and byte I2C R/W functions into a convenient class
 // 6/9/2012 by Jeff Rowberg <jeff@rowberg.net>
 //
 // Changelog:
 //     2012-06-09 - fix major issue with reading > 32 bytes at a time with Arduino Wire
-//                - add compiler warnings when using outdated or IDE or limited I2Cdev implementation
+//                - add compiler warnings when using outdated or IDE or limited i2cDev implementation
 //     2011-11-01 - fix write*Bits mask calculation (thanks sasquatch @ Arduino forums)
 //     2011-10-03 - added automatic Arduino version detection for ease of use
 //     2011-10-02 - added Gene Knight's NBWire TwoWire class implementation with small modifications
@@ -18,7 +18,7 @@
 //     2011-07-28 - initial release
 
 /* ============================================
-I2Cdev device library code is placed under the MIT license
+i2cDev device library code is placed under the MIT license
 Copyright (c) 2012 Jeff Rowberg
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,6 +60,7 @@ I2Cdev::I2Cdev() {
 }
 
 /** Read a single bit from an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from
  * @param bitNum Bit position to read (0-7)
@@ -67,14 +68,15 @@ I2Cdev::I2Cdev() {
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (true = success)
  */
-int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data, uint16_t timeout) {
+int8_t I2Cdev::readBit(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data, uint16_t timeout) {
     uint8_t b;
-    uint8_t count = readByte(devAddr, regAddr, &b, timeout);
+    uint8_t count = readByte(i2cDev, devAddr, regAddr, &b, timeout);
     *data = b & (1 << bitNum);
     return count;
 }
 
 /** Read a single bit from a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from
  * @param bitNum Bit position to read (0-15)
@@ -82,14 +84,15 @@ int8_t I2Cdev::readBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (true = success)
  */
-int8_t I2Cdev::readBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t *data, uint16_t timeout) {
+int8_t I2Cdev::readBitW(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t *data, uint16_t timeout) {
     uint16_t b;
-    uint8_t count = readWord(devAddr, regAddr, &b, timeout);
+    uint8_t count = readWord(i2cDev, devAddr, regAddr, &b, timeout);
     *data = b & (1 << bitNum);
     return count;
 }
 
 /** Read multiple bits from an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from
  * @param bitStart First bit position to read (0-7)
@@ -98,14 +101,14 @@ int8_t I2Cdev::readBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (true = success)
  */
-int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data, uint16_t timeout) {
+int8_t I2Cdev::readBits(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data, uint16_t timeout) {
     // 01101001 read byte
     // 76543210 bit numbers
     //    xxx   args: bitStart=4, length=3
     //    010   masked
     //   -> 010 shifted
     uint8_t count, b;
-    if ((count = readByte(devAddr, regAddr, &b, timeout)) != 0) {
+    if ((count = readByte(i2cDev, devAddr, regAddr, &b, timeout)) != 0) {
         uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         b &= mask;
         b >>= (bitStart - length + 1);
@@ -115,6 +118,7 @@ int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint
 }
 
 /** Read multiple bits from a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from
  * @param bitStart First bit position to read (0-15)
@@ -123,7 +127,7 @@ int8_t I2Cdev::readBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (1 = success, 0 = failure, -1 = timeout)
  */
-int8_t I2Cdev::readBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint16_t *data, uint16_t timeout) {
+int8_t I2Cdev::readBitsW(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint16_t *data, uint16_t timeout) {
     // 1101011001101001 read byte
     // fedcba9876543210 bit numbers
     //    xxx           args: bitStart=12, length=3
@@ -131,7 +135,7 @@ int8_t I2Cdev::readBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uin
     //           -> 010 shifted
     uint8_t count;
     uint16_t w;
-    if ((count = readWord(devAddr, regAddr, &w, timeout)) != 0) {
+    if ((count = readWord(i2cDev, devAddr, regAddr, &w, timeout)) != 0) {
         uint16_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         w &= mask;
         w >>= (bitStart - length + 1);
@@ -141,14 +145,15 @@ int8_t I2Cdev::readBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uin
 }
 
 /** Read single byte from an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to read from
  * @param data Container for byte value read from device
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (true = success)
  */
-int8_t I2Cdev::readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout) {
-    return readBytes(devAddr, regAddr, 1, data, timeout);
+int8_t I2Cdev::readByte(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout) {
+    return readBytes(i2cDev, devAddr, regAddr, 1, data, timeout);
 }
 
 /** Read single word from a 16-bit device register.
@@ -158,11 +163,12 @@ int8_t I2Cdev::readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Status of read operation (true = success)
  */
-int8_t I2Cdev::readWord(uint8_t devAddr, uint8_t regAddr, uint16_t *data, uint16_t timeout) {
-    return readWords(devAddr, regAddr, 1, data, timeout);
+int8_t I2Cdev::readWord(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint16_t *data, uint16_t timeout) {
+    return readWords(i2cDev, devAddr, regAddr, 1, data, timeout);
 }
 
 /** Read multiple bytes from an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr First register regAddr to read from
  * @param length Number of bytes to read
@@ -170,9 +176,9 @@ int8_t I2Cdev::readWord(uint8_t devAddr, uint8_t regAddr, uint16_t *data, uint16
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Number of bytes read (-1 indicates failure)
  */
-int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t *data, uint16_t timeout) {
+int8_t I2Cdev::readBytes(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t *data, uint16_t timeout) {
     int8_t count = 0;
-    int fd = open("/dev/i2c-1", O_RDWR);
+    int fd = open(i2cDev, O_RDWR);
 
     if (fd < 0) {
         fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
@@ -204,6 +210,7 @@ int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8
 }
 
 /** Read multiple words from a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr First register regAddr to read from
  * @param length Number of words to read
@@ -211,41 +218,44 @@ int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8
  * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
  * @return Number of words read (0 indicates failure)
  */
-int8_t I2Cdev::readWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t *data, uint16_t timeout) {
-    int8_t count = 0;   
-    count = readBytes(devAddr,regAddr, length*2, reinterpret_cast<uint8_t*>(data));
+int8_t I2Cdev::readWords(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t *data, uint16_t timeout) {
+    int8_t count = 0;
+    count = readBytes(i2cDev, devAddr,regAddr, length*2, reinterpret_cast<uint8_t*>(data));
     return count/2;
 }
 
 /** write a single bit in an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to write to
  * @param bitNum Bit position to write (0-7)
  * @param value New bit value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) {
+bool I2Cdev::writeBit(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) {
     uint8_t b;
-    readByte(devAddr, regAddr, &b);
+    readByte(i2cDev, devAddr, regAddr, &b);
     b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
-    return writeByte(devAddr, regAddr, b);
+    return writeByte(i2cDev, devAddr, regAddr, b);
 }
 
 /** write a single bit in a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to write to
  * @param bitNum Bit position to write (0-15)
  * @param value New bit value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t data) {
+bool I2Cdev::writeBitW(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t data) {
     uint16_t w;
-    readWord(devAddr, regAddr, &w);
+    readWord(i2cDev, devAddr, regAddr, &w);
     w = (data != 0) ? (w | (1 << bitNum)) : (w & ~(1 << bitNum));
-    return writeWord(devAddr, regAddr, w);
+    return writeWord(i2cDev, devAddr, regAddr, w);
 }
 
 /** Write multiple bits in an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to write to
  * @param bitStart First bit position to write (0-7)
@@ -253,7 +263,7 @@ bool I2Cdev::writeBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_
  * @param data Right-aligned value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data) {
+bool I2Cdev::writeBits(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data) {
     //      010 value to write
     // 76543210 bit numbers
     //    xxx   args: bitStart=4, length=3
@@ -262,19 +272,20 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
     // 10100011 original & ~mask
     // 10101011 masked | value
     uint8_t b;
-    if (readByte(devAddr, regAddr, &b) != 0) {
+    if (readByte(i2cDev, devAddr, regAddr, &b) != 0) {
         uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         data <<= (bitStart - length + 1); // shift data into correct position
         data &= mask; // zero all non-important bits in data
         b &= ~(mask); // zero all important bits in existing byte
         b |= data; // combine data with existing byte
-        return writeByte(devAddr, regAddr, b);
+        return writeByte(i2cDev, devAddr, regAddr, b);
     } else {
         return false;
     }
 }
 
 /** Write multiple bits in a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register regAddr to write to
  * @param bitStart First bit position to write (0-15)
@@ -282,7 +293,7 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
  * @param data Right-aligned value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint16_t data) {
+bool I2Cdev::writeBitsW(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint16_t data) {
     //              010 value to write
     // fedcba9876543210 bit numbers
     //    xxx           args: bitStart=12, length=3
@@ -291,13 +302,13 @@ bool I2Cdev::writeBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint
     // 1010001110010110 original & ~mask
     // 1010101110010110 masked | value
     uint16_t w;
-    if (readWord(devAddr, regAddr, &w) != 0) {
+    if (readWord(i2cDev, devAddr, regAddr, &w) != 0) {
         uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
         data <<= (bitStart - length + 1); // shift data into correct position
         data &= mask; // zero all non-important bits in data
         w &= ~(mask); // zero all important bits in existing word
         w |= data; // combine data with existing word
-        return writeWord(devAddr, regAddr, w);
+        return writeWord(i2cDev, devAddr, regAddr, w);
     } else {
         return false;
     }
@@ -309,28 +320,30 @@ bool I2Cdev::writeBitsW(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint
  * @param data New byte value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t data) {
-    return writeBytes(devAddr, regAddr, 1, &data);
+bool I2Cdev::writeByte(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t data) {
+    return writeBytes(i2cDev, devAddr, regAddr, 1, &data);
 }
 
 /** Write single word to a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr Register address to write to
  * @param data New word value to write
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t data) {
-    return writeWords(devAddr, regAddr, 1, &data);
+bool I2Cdev::writeWord(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint16_t data) {
+    return writeWords(i2cDev, devAddr, regAddr, 1, &data);
 }
 
 /** Write multiple bytes to an 8-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr First register address to write to
  * @param length Number of bytes to write
  * @param data Buffer to copy new data from
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t* data) {
+bool I2Cdev::writeBytes(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t* data) {
     int8_t count = 0;
     uint8_t buf[128];
     int fd;
@@ -340,7 +353,7 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
         return(FALSE);
     }
 
-    fd = open("/dev/i2c-1", O_RDWR);
+    fd = open(i2cDev , O_RDWR);
     if (fd < 0) {
         fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
         return(FALSE);
@@ -368,13 +381,14 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
 }
 
 /** Write multiple words to a 16-bit device register.
+ * @param i2cDev I2C bus
  * @param devAddr I2C slave device address
  * @param regAddr First register address to write to
  * @param length Number of words to write
  * @param data Buffer to copy new data from
  * @return Status of operation (true = success)
  */
-bool I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t* data) {
+bool I2Cdev::writeWords(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t* data) {
     int8_t count = 0;
     uint8_t buf[128];
     int i, fd;
@@ -387,7 +401,7 @@ bool I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16
         return(FALSE);
     }
 
-    fd = open("/dev/i2c-1", O_RDWR);
+    fd = open(i2cDev, O_RDWR);
     if (fd < 0) {
         fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
         return(FALSE);
@@ -420,4 +434,3 @@ bool I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16
  * Set this to 0 to disable timeout detection.
  */
 uint16_t I2Cdev::readTimeout = 0;
-

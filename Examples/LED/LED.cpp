@@ -17,7 +17,9 @@ make
 
 int main()
 {
-    PCA9685 pwm;
+    PCA9685 pwm(RASPBERRY_PI_MODEL_B_I2C, PCA9685_DEFAULT_ADDRESS);
+    // PCA9685 pwm(RASPBERRY_PI_MODEL_A_I2C, PCA9685_DEFAULT_ADDRESS);
+    
     pwm.initialize();
 
     uint16_t R = 0, G = 0, B = 4095;

@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include <string>
 #include "I2Cdev.h"
 
 #define PCA9685_DEFAULT_ADDRESS     0x40 // All address pins low, Navio default
@@ -68,8 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class PCA9685 {
     public:
-        PCA9685();
-        PCA9685(uint8_t address);
+        PCA9685(const char *i2cDev, uint8_t address = PCA9685_DEFAULT_ADDRESS);
 
         void initialize();
         bool testConnection();
@@ -91,6 +91,7 @@ class PCA9685 {
         void setAllPWMuS(float length_uS);
 
      private:
+        std::string i2cDev;
         uint8_t devAddr;
         float frequency;
 };

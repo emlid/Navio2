@@ -29,19 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PCA9685.h"
 
-/** Default constructor, uses default I2C address.
+/** PCA9685 constructor.
+ * @param address I2C address
  * @see PCA9685_DEFAULT_ADDRESS
  */
-PCA9685::PCA9685() {
-    devAddr = PCA9685_DEFAULT_ADDRESS;
-}
-
-/** Specific address constructor.
- * @param address I2C address
- * @see AK8975_DEFAULT_ADDRESS
- */
-PCA9685::PCA9685(uint8_t address) {
-    devAddr = address;
+PCA9685::PCA9685(const char *i2cDev, uint8_t address) {
+    this->i2cDev = std::string(i2cDev);
+    this->devAddr = address;
 }
 
 /** Power on and prepare for general usage.
@@ -50,8 +44,8 @@ PCA9685::PCA9685(uint8_t address) {
  * And finally the restart is performed to enable clocking.
  */
 void PCA9685::initialize() {
-    frequency = getFrequency();
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_AI_BIT, 1);
+    this->frequency = getFrequency();
+    I2Cdev::writeBit(i2cDev.c_str(), devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_AI_BIT, 1);
     restart();
 }
 
@@ -60,14 +54,14 @@ void PCA9685::initialize() {
  */
 bool PCA9685::testConnection() {
     uint8_t data;
-    return I2Cdev::readByte(devAddr, PCA9685_RA_PRE_SCALE, &data);
+    return I2Cdev::readByte(i2cDev.c_str(), devAddr, PCA9685_RA_PRE_SCALE, &data);
 }
 
 /** Put PCA9685 to sleep mode thus turning off the outputs.
  * @see PCA9685_MODE1_SLEEP_BIT
  */
 void PCA9685::sleep() {
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 1);
+    I2Cdev::writeBit(i2cDev.c_str(), devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 1);
 }
 
 /** Disable sleep mode and start the outputs.
@@ -75,8 +69,8 @@ void PCA9685::sleep() {
  * @see PCA9685_MODE1_RESTART_BIT
  */
 void PCA9685::restart() {
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 0);
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_RESTART_BIT, 1);
+    I2Cdev::writeBit(i2cDev.c_str(), devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 0);
+    I2Cdev::writeBit(i2cDev.c_str(), devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_RESTART_BIT, 1);
 }
 
 /** Calculate prescale value based on the specified frequency and write it to the device.
@@ -85,7 +79,7 @@ void PCA9685::restart() {
  */
 float PCA9685::getFrequency() {
     uint8_t data;
-    I2Cdev::readByte(devAddr, PCA9685_RA_PRE_SCALE, &data);
+    I2Cdev::readByte(i2cDev.c_str(), devAddr, PCA9685_RA_PRE_SCALE, &data);
     return 25000000.f / 4096.f / (data + 1);
 }
 
@@ -98,7 +92,7 @@ void PCA9685::setFrequency(float frequency) {
     sleep();
     usleep(10000);
     uint8_t prescale = roundf(25000000.f / 4096.f / frequency)  - 1;
-    I2Cdev::writeByte(devAddr, PCA9685_RA_PRE_SCALE, prescale);
+    I2Cdev::writeByte(i2cDev.c_str(), devAddr, PCA9685_RA_PRE_SCALE, prescale);
     this->frequency = getFrequency();
     restart();
 }
@@ -111,7 +105,7 @@ void PCA9685::setFrequency(float frequency) {
  */
 void PCA9685::setPWM(uint8_t channel, uint16_t offset, uint16_t length) {
     uint8_t data[4] = {offset & 0xFF, offset >> 8, length & 0xFF, length >> 8};
-    I2Cdev::writeBytes(devAddr, PCA9685_RA_LED0_ON_L + 4 * channel, 4, data);
+    I2Cdev::writeBytes(i2cDev.c_str(), devAddr, PCA9685_RA_LED0_ON_L + 4 * channel, 4, data);
 }
 
 /** Set channel's pulse length
@@ -148,7 +142,7 @@ void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
  */
 void PCA9685::setAllPWM(uint16_t offset, uint16_t length) {
     uint8_t data[4] = {offset & 0xFF, offset >> 8, length & 0xFF, length >> 8};
-    I2Cdev::writeBytes(devAddr, PCA9685_RA_ALL_LED_ON_L, 4, data);
+    I2Cdev::writeBytes(i2cDev.c_str(), devAddr, PCA9685_RA_ALL_LED_ON_L, 4, data);
 }
 
 /** Set pulse length for all channels

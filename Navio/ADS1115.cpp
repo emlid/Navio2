@@ -11,7 +11,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -41,10 +41,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Default mode is singleshot
  * @param address
  */
-ADS1115::ADS1115(uint8_t a): address(a) {
+ADS1115::ADS1115(const char *i2cDev, uint8_t address) {
+	this->i2cDev = std::string(i2cDev);
+	this->address = address;
 	memset(&config, 0, sizeof(config));
 	setGain(ADS1115_PGA_4P096);
-	setMultiplexer(ADS1115_MUX_P0_NG); 
+	setMultiplexer(ADS1115_MUX_P0_NG);
 	setMode(ADS1115_MODE_SINGLESHOT);
 	setComparatorQueueMode(ADS1115_COMP_QUE_DISABLE);
 }
@@ -61,10 +63,10 @@ void ADS1115::updateConfigRegister() {
 
 	/* New config */
 	c = config.status | config.mux | config.gain |
-		config.mode | config.rate | config.comparator | 
+		config.mode | config.rate | config.comparator |
 		config.polarity | config.latch | config.queue;
 
-	if ( I2Cdev::writeWord(address, ADS1115_RA_CONFIG, c) < 0) {
+	if ( I2Cdev::writeWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, c) < 0) {
 		fprintf(stderr, "Error while writing config\n");
 	}
 }
@@ -72,7 +74,7 @@ void ADS1115::updateConfigRegister() {
 /**
  * @brief Get data from Conversion Register
  *
- * @return Little-Endian result 
+ * @return Little-Endian result
  */
 int16_t ADS1115::getConversion() {
 	union {
@@ -84,13 +86,13 @@ int16_t ADS1115::getConversion() {
 	if (config.mode == ADS1115_MODE_SINGLESHOT ) {
 		/* Check for Operation Status. If it is 0 then we are ready to get data. Otherwise wait. */
 		setOpStatus(ADS1115_OS_ACTIVE);
-		while ((word.w & 0x80) == 0) {	
-			if ( I2Cdev::readWord(address, ADS1115_RA_CONFIG, &word.w) < 0 )
+		while ((word.w & 0x80) == 0) {
+			if ( I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &word.w) < 0 )
 				fprintf(stderr, "Error while reading config\n");
 		}
 	}
 
-    if ( (I2Cdev::readWord(address, ADS1115_RA_CONVERSION, &word.w)) < 0 ) {
+    if ( (I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONVERSION, &word.w)) < 0 ) {
 		fprintf(stderr, "Error while reading\n");
 	}
 	/* Exchange MSB and LSB */
@@ -101,7 +103,7 @@ int16_t ADS1115::getConversion() {
 /**
  * @brief Update Operational Status
  *
- * @param Desired Status 
+ * @param Desired Status
  */
 void ADS1115::setOpStatus(uint16_t status) {
 		config.status = status;
@@ -167,7 +169,7 @@ uint16_t ADS1115::getMode() {
 void ADS1115::setMode(uint16_t mode) {
 	if (config.mode != mode) {
 		config.mode = mode;
-		updateConfigRegister();	
+		updateConfigRegister();
 	}
 }
 
@@ -177,7 +179,7 @@ void ADS1115::setMode(uint16_t mode) {
  * @return rate
  */
 uint16_t ADS1115::getRate() {
-	return config.rate;	
+	return config.rate;
 }
 
 /**
@@ -200,7 +202,7 @@ void ADS1115::showConfigRegister() {
 		uint16_t w;
 		uint8_t b[2];
 	} buf;
-    I2Cdev::readWord(address, ADS1115_RA_CONFIG, &buf.w);
+    I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &buf.w);
 
 	debug("Config Register: 0x%04x | 0x%02x 0x%02x", buf.w, buf.b[0], buf.b[1]);
 }
@@ -212,28 +214,28 @@ void ADS1115::showConfigRegister() {
  * @return Last conversion in mV
  */
 float ADS1115::getMilliVolts() {
-  switch (config.gain) { 
+  switch (config.gain) {
     case ADS1115_PGA_6P144:
       return (getConversion() * ADS1115_MV_6P144);
-      break;    
+      break;
     case ADS1115_PGA_4P096:
       return (getConversion() * ADS1115_MV_4P096);
-      break;             
-    case ADS1115_PGA_2P048:    
+      break;
+    case ADS1115_PGA_2P048:
       return (getConversion() * ADS1115_MV_2P048);
-      break;       
-    case ADS1115_PGA_1P024:     
+      break;
+    case ADS1115_PGA_1P024:
       return (getConversion() * ADS1115_MV_1P024);
-      break;       
-    case ADS1115_PGA_0P512:      
+      break;
+    case ADS1115_PGA_0P512:
       return (getConversion() * ADS1115_MV_0P512);
-      break;       
-    case ADS1115_PGA_0P256:           
-    case ADS1115_PGA_0P256B:          
-    case ADS1115_PGA_0P256C:      
+      break;
+    case ADS1115_PGA_0P256:
+    case ADS1115_PGA_0P256B:
+    case ADS1115_PGA_0P256C:
       return (getConversion() * ADS1115_MV_0P256);
-      break;       
-	default: 
+      break;
+	default:
 	  fprintf(stderr, "Wrong gain\n");
 	  return -1;
 	  break;
@@ -288,4 +290,3 @@ void ADS1115::setComparatorQueueMode(uint16_t queue) {
 	}
 
 }
-

@@ -32,10 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "I2Cdev.h"
 #include <math.h>
 #include <unistd.h>
+#include <string>
 
-#define MS5611_ADDRESS_CSB_LOW  0x76 // address pin low (GND) - Navio rev.2
-#define MS5611_ADDRESS_CSB_HIGH 0x77 // address pin high (VCC) - Navio rev.1
-#define MS5611_DEFAULT_ADDRESS  MS5611_ADDRESS_CSB_LOW
+#define MS5611_ADDRESS_CSB_LOW  0x76
+#define MS5611_ADDRESS_CSB_HIGH 0x77
+#define MS5611_DEFAULT_ADDRESS  MS5611_ADDRESS_CSB_HIGH
 
 #define MS5611_RA_ADC           0x00
 #define MS5611_RA_RESET         0x1E
@@ -63,8 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class MS5611 {
     public:
-        MS5611();
-	    MS5611(uint8_t address);
+	    MS5611(const char *i2cDev, uint8_t address = MS5611_DEFAULT_ADDRESS);
 
         void initialize();
         bool testConnection();
@@ -72,7 +72,7 @@ class MS5611 {
 	    void refreshPressure(uint8_t OSR = MS5611_RA_D1_OSR_4096);
 	    void readPressure();
 
-	    void refreshTemperature(uint8_t OSR = MS5611_RA_D1_OSR_4096);
+	    void refreshTemperature(uint8_t OSR = MS5611_RA_D2_OSR_4096);
 	    void readTemperature();
 
 	    void calculatePressureAndTemperature();
@@ -82,6 +82,7 @@ class MS5611 {
 	    float getPressure();
 
     private:
+        std::string i2cDev; // I2C bus
 	    uint8_t devAddr; // I2C device adress
 	    uint16_t C1, C2, C3, C4, C5, C6; // Calibration data
 	    uint32_t D1, D2; // Raw measurement data

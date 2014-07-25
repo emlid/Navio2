@@ -11,7 +11,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Emlid Limited nor the names of its contributors 
+    * Neither the name of the Emlid Limited nor the names of its contributors
       may be used to endorse or promote products derived from this software
       without specific prior written permission.
 
@@ -30,9 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _ADS1115_H_
 #define _ADS1115_H_
 
+#include <string>
+
 #ifdef DEBUG_ADS1115
 #define debug(M, ...) fprintf(stderr, "DEBUG %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
-#else 
+#else
 #define debug(M, ...)
 #endif
 
@@ -51,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_OS_INACTIVE         0x00 << ADS1115_OS_SHIFT
 #define ADS1115_OS_ACTIVE           0x01 << ADS1115_OS_SHIFT
 
-#define ADS1115_MUX_SHIFT			12		
+#define ADS1115_MUX_SHIFT			12
 #define ADS1115_MUX_P0_N1           0x00 << ADS1115_MUX_SHIFT /* default */
 #define ADS1115_MUX_P0_N3           0x01 << ADS1115_MUX_SHIFT
 #define ADS1115_MUX_P1_N3           0x02 << ADS1115_MUX_SHIFT
@@ -77,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_MV_1P024            0.031250
 #define ADS1115_MV_0P512            0.015625
 #define ADS1115_MV_0P256            0.007813
-#define ADS1115_MV_0P256B           0.007813 
+#define ADS1115_MV_0P256B           0.007813
 #define ADS1115_MV_0P256C           0.007813
 
 #define ADS1115_MODE_SHIFT			8
@@ -98,13 +100,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_COMP_MODE_HYSTERESIS    0x00 << ADS1115_COMP_MODE_SHIFT		// default
 #define ADS1115_COMP_MODE_WINDOW        0x01 << ADS1115_COMP_MODE_SHIFT
 
-#define ADS1115_COMP_POL_SHIFT			3	
+#define ADS1115_COMP_POL_SHIFT			3
 #define ADS1115_COMP_POL_ACTIVE_LOW     0x00 << ADS1115_COMP_POL_SHIFT	 // default
-#define ADS1115_COMP_POL_ACTIVE_HIGH    0x01 << ADS1115_COMP_POL_SHIFT	 		
+#define ADS1115_COMP_POL_ACTIVE_HIGH    0x01 << ADS1115_COMP_POL_SHIFT
 
 #define ADS1115_COMP_LAT_SHIFT			2
 #define ADS1115_COMP_LAT_NON_LATCHING   0x00 << ADS1115_COMP_LAT_SHIFT	// default
-#define ADS1115_COMP_LAT_LATCHING       0x01 << ADS1115_COMP_LAT_SHIFT		
+#define ADS1115_COMP_LAT_LATCHING       0x01 << ADS1115_COMP_LAT_SHIFT
 
 #define ADS1115_COMP_QUE_SHIFT		0
 #define ADS1115_COMP_QUE_ASSERT1    0x00 << ADS1115_COMP_SHIFT
@@ -116,12 +118,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class ADS1115 {
     public:
-        ADS1115(uint8_t address);
-        ADS1115();
+        ADS1115(const char *i2cDev, uint8_t address = ADS1115_DEFAULT_ADDRESS);
         ~ADS1115();
-        
+
         int16_t getConversion();
-		
+
         void setOpStatus(uint16_t op);
 
         uint16_t getMultiplexer();
@@ -146,6 +147,7 @@ class ADS1115 {
     private:
 		void updateConfigRegister();
 
+        std::string i2cDev;
 		uint8_t address;
 
 		struct configRegister {
