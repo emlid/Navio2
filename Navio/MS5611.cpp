@@ -64,7 +64,11 @@ void MS5611::initialize() {
  */
 bool MS5611::testConnection() {
     uint8_t data;
-    return I2Cdev::readByte(i2cDev.c_str(), devAddr, MS5611_RA_ADC, &data);
+    int8_t status = I2Cdev::readByte(i2cDev.c_str(), devAddr, MS5611_RA_C0, &data);
+    if (status > 0)
+        return true;
+    else
+        return false;
 }
 
 /** Initiate the process of pressure measurement

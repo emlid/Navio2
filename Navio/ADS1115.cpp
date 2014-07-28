@@ -55,6 +55,18 @@ ADS1115::~ADS1115() {
 
 }
 
+/** Verify the I2C connection.
+* @return True if connection is valid, false otherwise
+*/
+bool ADS1115::testConnection() {
+	uint8_t data;
+	int8_t status = I2Cdev::readByte(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &data);
+	if (status > 0)
+		return true;
+	else
+		return false;
+}
+
 /**
  * @brief Call it if you updated ConfigRegister
  */

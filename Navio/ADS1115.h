@@ -121,6 +121,8 @@ class ADS1115 {
         ADS1115(const char *i2cDev, uint8_t address = ADS1115_DEFAULT_ADDRESS);
         ~ADS1115();
 
+        bool testConnection();
+
         int16_t getConversion();
 
         void setOpStatus(uint16_t op);

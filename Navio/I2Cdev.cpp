@@ -195,6 +195,7 @@ int8_t I2Cdev::readBytes(const char *i2cDev, uint8_t devAddr, uint8_t regAddr, u
         return(-1);
     }
     count = read(fd, data, length);
+
     if (count < 0) {
         fprintf(stderr, "Failed to read device(%d): %s\n", count, ::strerror(errno));
         close(fd);

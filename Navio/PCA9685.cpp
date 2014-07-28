@@ -54,7 +54,11 @@ void PCA9685::initialize() {
  */
 bool PCA9685::testConnection() {
     uint8_t data;
-    return I2Cdev::readByte(i2cDev.c_str(), devAddr, PCA9685_RA_PRE_SCALE, &data);
+    int8_t status = I2Cdev::readByte(i2cDev.c_str(), devAddr, PCA9685_RA_PRE_SCALE, &data);
+    if (status > 0)
+        return true;
+    else
+        return false;
 }
 
 /** Put PCA9685 to sleep mode thus turning off the outputs.

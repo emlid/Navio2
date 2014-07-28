@@ -55,6 +55,23 @@ void MPU9250::ReadRegs( uint8_t ReadAddr, uint8_t *ReadBuf, unsigned int Bytes )
 }
 
 /*-----------------------------------------------------------------------------------------------
+                                TEST CONNECTION
+usage: call this function to know if SPI and MPU9250 are working correctly.
+returns true if mpu9250 answers
+-----------------------------------------------------------------------------------------------*/
+
+bool MPU9250::testConnection()
+{
+    unsigned int response;
+    response=WriteReg(MPUREG_WHOAMI|READ_FLAG, 0x00);
+    
+    if (response == 0x71)
+        return true;
+    else
+        return false;
+}
+
+/*-----------------------------------------------------------------------------------------------
                                     INITIALIZATION
 usage: call this function at startup, giving the sample rate divider (raging from 0 to 255) and
 low pass filter value; suitable values are:
