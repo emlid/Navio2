@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SPIDEV_H_
 #define _SPIDEV_H_
 
-#define _XOPEN_SOURCE 600
+//#define _XOPEN_SOURCE 600
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -66,6 +66,12 @@ public:
 		spi_transfer.delay_usecs = delay_usecs;
 
 		int spi_fd = ::open(spidev, O_RDWR);
+
+		if (spi_fd < 0 ) {
+			printf("Error: Can not open SPI device\n");
+            
+            return -1;
+		}
 
 		int status = ioctl(spi_fd, SPI_IOC_MESSAGE(1), &spi_transfer);
 
