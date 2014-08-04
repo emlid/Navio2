@@ -55,7 +55,7 @@ void UBXScanner::reset()
 {
     message_length = 0;
     position = 0;
-    state = Sync1;      
+    state = Sync1;
 }
 
 int UBXScanner::update(unsigned char data)
@@ -63,26 +63,26 @@ int UBXScanner::update(unsigned char data)
     if (state != Done)
         message[position++] = data;
 
-    switch (state) 
+    switch (state)
     {
     case Sync1:
-        if (data == 0xb5) 
+        if (data == 0xb5)
             state = Sync2;
         else
             reset();
         break;
 
     case Sync2:
-        if (data == 0x62) 
+        if (data == 0x62)
             state = Class;
         else
             if (data == 0xb5)
                 state = Sync1;
             else
-                reset();    
+                reset();
         break;
 
-    case Class: 
+    case Class:
         state = ID;
         break;
 
@@ -110,7 +110,7 @@ int UBXScanner::update(unsigned char data)
     case CK_A:
         state = CK_B;
         break;
-    
+
     case CK_B:
         message_length = 6 + payload_length + 2;
         state = Done;
@@ -122,7 +122,7 @@ int UBXScanner::update(unsigned char data)
     }
 
     return state;
-}  
+}
 
 // class UBXParser
 
@@ -184,10 +184,10 @@ int UBXParser::decodeMessage(std::vector<double>& data)
     switch(id){
         case 258: {
                 // ID for Nav-Posllh messages is 0x0102 == 258
-                // In this example we extract 4 variables - longitude, latitude, 
+                // In this example we extract 4 variables - longitude, latitude,
                 // height above ellipsoid and iTOW - GPS Millisecond Time of Week
 
-                // All the needed parameters are 4-byte numbers with little endianness. 
+                // All the needed parameters are 4-byte numbers with little endianness.
                 // We know the current message and we want to update the info in the data vector.
                 // First we clear the old data:
 
@@ -203,7 +203,7 @@ int UBXParser::decodeMessage(std::vector<double>& data)
                 data.push_back ((*(message+pos+17) << 24) | (*(message+pos+16) << 16) | (*(message+pos+15) << 8) | (*(message+pos+14)));
                 //Height
                 data.push_back ((*(message+pos+21) << 24) | (*(message+pos+20) << 16) | (*(message+pos+19) << 8) | (*(message+pos+18)));
-            }   
+            }
 
             break;
 
@@ -246,7 +246,7 @@ int UBXParser::checkMessage()
     if (CK_B != *(message+pos+length-1)) flag=0;
 
     return flag;
-} 
+}
 
 // class Ublox
 
@@ -266,7 +266,7 @@ int Ublox::enableNAV_POSLLH()
     int gps_nav_posllh_length = (sizeof(gps_nav_posllh)/sizeof(*gps_nav_posllh));
     unsigned char from_gps_data_nav[gps_nav_posllh_length];
 
-    return SPIdev::transfer(spi_device_name.c_str(), gps_nav_posllh, from_gps_data_nav, gps_nav_posllh_length, 200000); 
+    return SPIdev::transfer(spi_device_name.c_str(), gps_nav_posllh, from_gps_data_nav, gps_nav_posllh_length, 200000);
 }
 
 int Ublox::testConnection()
@@ -278,12 +278,12 @@ int Ublox::testConnection()
     // we do this, so that at least one ubx message is enabled
 
     if (enableNAV_POSLLH()<0)
-    {  
+    {
         std::cerr << "Could not configure ublox over SPI\n";
-    }  
+    }
 
-    while (count < 300)
-    {   
+    while (count < buffer_length/2)
+    {
         // From now on, we will send zeroes to the receiver, which it will ignore
         // However, we are simultaneously getting useful information from it
         SPIdev::transfer(spi_device_name.c_str(), &to_gps_data, &from_gps_data, 1, 200000);
@@ -291,18 +291,23 @@ int Ublox::testConnection()
         // Scanner checks the message structure with every byte received
         status = scanner->update(from_gps_data);
 
-        if (status == UBXScanner::Done) 
+        if (status == UBXScanner::Done)
         {
             // Once we have a full message we decode it and reset the scanner, making it look for another message
             // in the data stream, coming over SPI
 
             // If we find at least one valid message in the buffer, we consider connection to be established
-            if(parser->checkMessage()==1) return 1;
-            scanner->reset(); 
-        }   
+            if(parser->checkMessage()==1)
+            {
+                scanner->reset();
+                return 1;
+            }
+
+            scanner->reset();
+        }
 
         count++;
-    }       
+    }
 
     return 0;
 }
@@ -314,12 +319,12 @@ int Ublox::decodeMessages()
     std::vector<double> position_data;
 
     if (enableNAV_POSLLH()<0)
-    {  
+    {
         std::cerr << "Could not configure ublox over SPI\n";
-    } 
+    }
 
     while (true)
-    {   
+    {
         // From now on, we will send zeroes to the receiver, which it will ignore
         // However, we are simultaneously getting useful information from it
         SPIdev::transfer(spi_device_name.c_str(), &to_gps_data, &from_gps_data, 1, 200000);
@@ -327,7 +332,7 @@ int Ublox::decodeMessages()
         // Scanner checks the message structure with every byte received
         status = scanner->update(from_gps_data);
 
-        if (status == UBXScanner::Done) 
+        if (status == UBXScanner::Done)
         {
             // Once we have a full message we decode it and reset the scanner, making it look for another message
             // in the data stream, coming over SPI
@@ -343,11 +348,11 @@ int Ublox::decodeMessages()
             }
 
             scanner->reset();
-        }   
+        }
 
         usleep(200);
 
-    }  
+    }
 
     return 0 ;
 }
@@ -363,7 +368,7 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                 unsigned char to_gps_data = 0x00, from_gps_data = 0x00;
 
                 while (count < buffer_length/2)
-                {   
+                {
                     // From now on, we will send zeroes to the receiver, which it will ignore
                     // However, we are simultaneously getting useful information from it
                     SPIdev::transfer(spi_device_name.c_str(), &to_gps_data, &from_gps_data, 1, 200000);
@@ -371,7 +376,7 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                     // Scanner checks the message structure with every byte received
                     status = scanner->update(from_gps_data);
 
-                    if (status == UBXScanner::Done) 
+                    if (status == UBXScanner::Done)
                     {
                         // Once we have a full message we decode it and reset the scanner, making it look for another message
                         // in the data stream, coming over SPI
@@ -383,20 +388,20 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                             // printf("iTOW: %lf\n", position_data[0]/1000);
                             // printf("Latitude: %lf\n", position_data[2]/10000000);
                             // printf("Longitude: %lf\n", position_data[1]/10000000);
-                            // printf("Height: %lf\n", position_data[3]/100);  
+                            // printf("Height: %lf\n", position_data[3]/100);
 
                             // You can see ubx message structure in ublox reference manual
 
-                            scanner->reset();              
+                            scanner->reset();
 
                             return 1;
                         }
 
-                        scanner->reset(); 
-                    }  
+                        scanner->reset();
+                    }
 
                     count++;
-                }       
+                }
 
                 return 0;
             }
@@ -405,10 +410,9 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
 
         // add your ubx message type here!
 
-        default: 
+        default:
             return 0;
 
         break;
     }
 }
-
