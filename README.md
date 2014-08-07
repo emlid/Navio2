@@ -20,6 +20,7 @@ Basic examples showing how to work with Navio's onboard devices.
 * AccelGyroMag
 * ADC
 * Barometer
+* GPS
 * LED
 * Servo
 
@@ -28,6 +29,7 @@ Basic examples showing how to work with Navio's onboard devices.
 Drivers for the Navio's onboard devices and peripheral interfaces.
 
 * MPU9250 SPI
+* U-blox SPI
 * MS5611 I2C
 * PCA9685 I2C
 * ADS1115 I2C
