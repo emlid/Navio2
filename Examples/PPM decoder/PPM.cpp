@@ -39,10 +39,10 @@ unsigned int deltaTime;
 
 void ppmOnEdge(int gpio, int level, uint32_t tick)
 {
-	deltaTime = tick - previousTick;
-	previousTick = tick;
-
-	if (level == 0)
+	if (level == 0) {	
+		deltaTime = tick - previousTick;
+		previousTick = tick;
+	
 		if (deltaTime >= ppmSyncLength) { // Sync
 			currentChannel = 0;
 
@@ -60,6 +60,7 @@ void ppmOnEdge(int gpio, int level, uint32_t tick)
 		else
 			if (currentChannel < ppmChannelsNumber)
 				channels[currentChannel++] = deltaTime;
+	}
 }
 
 //================================== Main ======================================
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
 {
 	// Servo controller setup
 
-	pwm = new PCA9685();
+	pwm = new PCA9685(RASPBERRY_PI_MODEL_B_I2C, PCA9685_DEFAULT_ADDRESS);
 	pwm->initialize();
 	pwm->setFrequency(servoFrequency);
 
