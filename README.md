@@ -10,8 +10,8 @@ Collection of drivers and examples for Navio - autopilot shield for Raspberry Pi
 Advanced example applications and utilities.
 
 * 3D IMU visualizer
-* AHRS
-* PPM decoder
+* U-blox SPI to PTY bridge utility
+* U-blox SPI to TCP bridge utility 
 
 ### Examples
 
@@ -19,9 +19,11 @@ Basic examples showing how to work with Navio's onboard devices.
 
 * AccelGyroMag
 * ADC
+* AHRS
 * Barometer
 * GPS
 * LED
+* PPM decoder
 * Servo
 
 ### Navio

@@ -3,9 +3,8 @@
 # Written by Mikhail Avkhimenia (mikhail.avkhimenia@emlid.com)
 # twitter.com/emlidtech || www.emlid.com || info@emlid.com
 #
-# This application visualizes Navio's IMU data. It can be run on Raspberry Pi
-# as well as on another machine in the network. It listens for data on the
-# UDP port 7000. To run it type in the terminal:
+# This application visualizes Navio's IMU data. Tested to work under Ubuntu and 
+# Mac OS X. It listens for data on the UDP port 7000. To run it type:
 # python 3Dimu.py
 
 from OpenGL.GL import *
