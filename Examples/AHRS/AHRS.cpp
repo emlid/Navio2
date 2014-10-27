@@ -110,7 +110,10 @@ void imuLoop()
     imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
     ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
 
-    // FIXME Fix magnetometer data usage in AHRS, currently not working
+    // FIXME In order to use magnetometer it's orientation has to be fixed
+    // according to MPU9250 datasheet. Also, soft and hard iron calibration
+    // would be required.
+    
     // imu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
     // ahrs.update(ax, ay, az, gx/0.0175, gy/0.0175, gz/0.0175, mx, my, mz, dt);
 
