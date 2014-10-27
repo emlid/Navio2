@@ -26,7 +26,7 @@ int main()
 
 
     pwm.initialize();
-    pwm.setFrequency(100);
+    pwm.setFrequency(50);
 
     while (true) {
         pwm.setPWMmS(NAVIO_RCOUTPUT_1, SERVO_MIN);
