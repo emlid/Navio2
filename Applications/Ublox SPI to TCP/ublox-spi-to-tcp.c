@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	tr.tx_buf = (unsigned long)&txdata;
 	tr.rx_buf = (unsigned long)&rxdata;
 	tr.len = 1;
-	tr.speed_hz = 200000;
+	tr.speed_hz = 245000;
 	tr.bits_per_word = 8;
 
 	// UBX + NMEA scanner 
@@ -233,8 +233,6 @@ int main(int argc, char *argv[])
 			}
 			break;
 		}
-
-		usleep(500); // You may want to lower the value if you want to get a lot of messages
 	}
 
 	return 0 ;
