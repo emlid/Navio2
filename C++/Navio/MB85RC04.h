@@ -33,14 +33,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string>
 #include "I2Cdev.h"
 
 class MB85RC04
 {
 	uint8_t device_address;
+	std::string i2cDev;
 
 public:
-	MB85RC04();
+	MB85RC04(const char *i2cDev, uint8_t address = 0b1010000);
 	uint8_t readByte(uint16_t register_address, uint8_t* data);
 	uint8_t writeByte(uint16_t register_address, uint8_t data);
 	uint8_t readBytes(uint16_t register_address, uint8_t length, uint8_t* data);

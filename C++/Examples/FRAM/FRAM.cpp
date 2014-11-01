@@ -15,7 +15,7 @@ int main()
 
 	printf("Fram memory Write/Read test!\nWe will write value 0xCC to the address 0 of fram memory, and then read it:\n");
 
-	MB85RC04 fram;
+	MB85RC04 fram(RASPBERRY_PI_MODEL_B_I2C);
 
 	printf("Writing data...\n");
 
