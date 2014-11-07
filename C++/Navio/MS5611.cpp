@@ -121,7 +121,7 @@ void MS5611::calculatePressureAndTemperature() {
         OFF2 = 0;
         SENS2 = 0;
     }
-    if (TEMP < 2000 && TEMP >= -1500)
+    if (TEMP < 2000)
     {
         T2 = dT * dT / pow(2, 31);
         OFF2 = 5 * pow(TEMP - 2000, 2) / 2;
