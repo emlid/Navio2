@@ -47,17 +47,17 @@ static const int buffer_length = 1024;
 
 class UBXScanner {
 public:
-    enum State 
+    enum State
     {
-        Sync1, 
-        Sync2, 
-        Class, 
-        ID, 
-        Length1, 
-        Length2, 
-        Payload, 
-        CK_A, 
-        CK_B,   
+        Sync1,
+        Sync2,
+        Class,
+        ID,
+        Length1,
+        Length2,
+        Payload,
+        CK_A,
+        CK_B,
         Done
     };
 
@@ -96,7 +96,8 @@ class Ublox {
 public:
 enum message_t
 {
-    NAV_POSLLH = 0x0102
+    NAV_POSLLH = 0x0102,
+    NAV_STATUS = 0x0103
 };
 
 private:
@@ -108,12 +109,8 @@ public:
     Ublox(std::string name = "/dev/spidev0.0");
     Ublox(std::string name, UBXScanner* scan, UBXParser* pars);
     int enableNAV_POSLLH();
+    int enableNAV_STATUS();
     int testConnection();
     int decodeMessages();
     int decodeSingleMessage(message_t msg, std::vector<double>& position_data);
 }; // end of ublox class def
-
-
-
-
-
