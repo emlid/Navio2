@@ -34,10 +34,17 @@ sps = 250  # 250 samples per second
 # Set this to ADS1015 or ADS1115 depending on the ADC you are using!
 adc = ADS1x15(ic=ADS1115)
 
-# Read channel 0 in single-ended mode using the settings above
-volts = adc.readADCSingleEnded(0, gain, sps) / 1000
+while 1:
 
-# To read channel 3 in single-ended mode, +/- 1.024V, 860 sps use:
-# volts = adc.readADCSingleEnded(3, 1024, 860)
+	# Reading all channels
+	volts = adc.readADCSingleEnded(0, gain, sps) / 1000
+	print "A0: %.4fmV " % (volts),
 
-print "%.6f" % (volts)
+	volts = adc.readADCSingleEnded(1, gain, sps) / 1000
+	print "A1: %.4fmV " % (volts),
+
+	volts = adc.readADCSingleEnded(2, gain, sps) / 1000
+	print "A2: %.4fmV " % (volts),
+
+	volts = adc.readADCSingleEnded(3, gain, sps) / 1000
+	print "A3: %.4fmV" % (volts)
