@@ -64,7 +64,7 @@ bool MPU9250::testConnection()
 {
     unsigned int response;
     response=WriteReg(MPUREG_WHOAMI|READ_FLAG, 0x00);
-    
+
     if (response == 0x71)
         return true;
     else
@@ -423,7 +423,7 @@ void MPU9250::read_all(){
     bit_data=((int16_t)response[i*2]<<8)|response[i*2+1];
     data=(float)bit_data;
     temperature=((data-21)/333.87)+21;
-    //Get gyroscop value
+    //Get gyroscope value
     for(i=4; i<7; i++) {
         bit_data=((int16_t)response[i*2]<<8)|response[i*2+1];
         data=(float)bit_data;
