@@ -20,8 +20,8 @@ make
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(array[0]))
 int main() {
 
-	ADS1115 adc(RASPBERRY_PI_MODEL_B_I2C, ADS1115_DEFAULT_ADDRESS);
-	//ADS1115 adc(RASPBERRY_PI_MODEL_A_I2C, ADS1115_DEFAULT_ADDRESS);
+    ADS1115 adc(RASPBERRY_PI_MODEL_B_I2C, ADS1115_DEFAULT_ADDRESS);
+    //ADS1115 adc(RASPBERRY_PI_MODEL_A_I2C, ADS1115_DEFAULT_ADDRESS);
 
     adc.setMode(ADS1115_MODE_SINGLESHOT);
     adc.setRate(ADS1115_RATE_860); 
@@ -30,10 +30,10 @@ int main() {
     float results[ARRAY_SIZE(muxes)] = {0.0f};
     int i = 0;
 
-	while (true) {
+    while (true) {
         adc.setMultiplexer(muxes[i]);
 
-		float conversion = adc.getMilliVolts();
+        float conversion = adc.getMilliVolts();
         results[i] = conversion;
 
         i = (i + 1) % ARRAY_SIZE(muxes);
@@ -42,7 +42,7 @@ int main() {
             printf("A%d: %.4fmV ", j, results[j] / 1000);
         }
         printf("\n");
-	}
+    }
 
-	return 0;
+    return 0;
 }
