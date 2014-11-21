@@ -49,11 +49,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_RA_LO_THRESH        0x02
 #define ADS1115_RA_HI_THRESH        0x03
 
-#define ADS1115_OS_SHIFT			15
+#define ADS1115_OS_SHIFT            15
 #define ADS1115_OS_INACTIVE         0x00 << ADS1115_OS_SHIFT
 #define ADS1115_OS_ACTIVE           0x01 << ADS1115_OS_SHIFT
 
-#define ADS1115_MUX_SHIFT			12
+#define ADS1115_MUX_SHIFT            12
 #define ADS1115_MUX_P0_N1           0x00 << ADS1115_MUX_SHIFT /* default */
 #define ADS1115_MUX_P0_N3           0x01 << ADS1115_MUX_SHIFT
 #define ADS1115_MUX_P1_N3           0x02 << ADS1115_MUX_SHIFT
@@ -63,7 +63,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_MUX_P2_NG           0x06 << ADS1115_MUX_SHIFT
 #define ADS1115_MUX_P3_NG           0x07 << ADS1115_MUX_SHIFT
 
-#define ADS1115_PGA_SHIFT			9
+#define ADS1115_PGA_SHIFT            9
 #define ADS1115_PGA_6P144           0x00 << ADS1115_PGA_SHIFT
 #define ADS1115_PGA_4P096           0x01 << ADS1115_PGA_SHIFT
 #define ADS1115_PGA_2P048           0x02 << ADS1115_PGA_SHIFT // default
@@ -82,11 +82,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_MV_0P256B           0.007813
 #define ADS1115_MV_0P256C           0.007813
 
-#define ADS1115_MODE_SHIFT			8
+#define ADS1115_MODE_SHIFT            8
 #define ADS1115_MODE_CONTINUOUS     0x00 << ADS1115_MODE_SHIFT
 #define ADS1115_MODE_SINGLESHOT     0x01 << ADS1115_MODE_SHIFT // default
 
-#define ADS1115_RATE_SHIFT			5
+#define ADS1115_RATE_SHIFT            5
 #define ADS1115_RATE_8              0x00 << ADS1115_RATE_SHIFT
 #define ADS1115_RATE_16             0x01 << ADS1115_RATE_SHIFT
 #define ADS1115_RATE_32             0x02 << ADS1115_RATE_SHIFT
@@ -96,19 +96,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_RATE_475            0x06 << ADS1115_RATE_SHIFT
 #define ADS1115_RATE_860            0x07 << ADS1115_RATE_SHIFT
 
-#define ADS1115_COMP_MODE_SHIFT			4
-#define ADS1115_COMP_MODE_HYSTERESIS    0x00 << ADS1115_COMP_MODE_SHIFT		// default
+#define ADS1115_COMP_MODE_SHIFT            4
+#define ADS1115_COMP_MODE_HYSTERESIS    0x00 << ADS1115_COMP_MODE_SHIFT        // default
 #define ADS1115_COMP_MODE_WINDOW        0x01 << ADS1115_COMP_MODE_SHIFT
 
-#define ADS1115_COMP_POL_SHIFT			3
-#define ADS1115_COMP_POL_ACTIVE_LOW     0x00 << ADS1115_COMP_POL_SHIFT	 // default
+#define ADS1115_COMP_POL_SHIFT            3
+#define ADS1115_COMP_POL_ACTIVE_LOW     0x00 << ADS1115_COMP_POL_SHIFT     // default
 #define ADS1115_COMP_POL_ACTIVE_HIGH    0x01 << ADS1115_COMP_POL_SHIFT
 
-#define ADS1115_COMP_LAT_SHIFT			2
-#define ADS1115_COMP_LAT_NON_LATCHING   0x00 << ADS1115_COMP_LAT_SHIFT	// default
+#define ADS1115_COMP_LAT_SHIFT            2
+#define ADS1115_COMP_LAT_NON_LATCHING   0x00 << ADS1115_COMP_LAT_SHIFT    // default
 #define ADS1115_COMP_LAT_LATCHING       0x01 << ADS1115_COMP_LAT_SHIFT
 
-#define ADS1115_COMP_QUE_SHIFT		0
+#define ADS1115_COMP_QUE_SHIFT        0
 #define ADS1115_COMP_QUE_ASSERT1    0x00 << ADS1115_COMP_SHIFT
 #define ADS1115_COMP_QUE_ASSERT2    0x01 << ADS1115_COMP_SHIFT
 #define ADS1115_COMP_QUE_ASSERT4    0x02 << ADS1115_COMP_SHIFT
@@ -139,30 +139,30 @@ class ADS1115 {
         uint16_t getRate();
         void setRate(uint16_t rate);
 
-		float getMilliVolts();
+        float getMilliVolts();
 
-		void setComparatorMode(uint16_t comparatorMode);
-		void setComparatorPolarity(uint16_t polarit);
-		void setComparatorLatchEnabled(uint16_t latchStatus);
-		void setComparatorQueueMode(uint16_t queueMode);
+        void setComparatorMode(uint16_t comparatorMode);
+        void setComparatorPolarity(uint16_t polarit);
+        void setComparatorLatchEnabled(uint16_t latchStatus);
+        void setComparatorQueueMode(uint16_t queueMode);
 
     private:
-		void updateConfigRegister();
+        void updateConfigRegister();
 
         std::string i2cDev;
-		uint8_t address;
+        uint8_t address;
 
-		struct configRegister {
-			uint16_t status;
-			uint16_t mux;
-			uint16_t gain;
-			uint16_t mode;
-			uint16_t rate;
-			uint16_t comparator;
-			uint16_t polarity;
-			uint16_t latch;
-			uint16_t queue;
-		} config;
+        struct configRegister {
+            uint16_t status;
+            uint16_t mux;
+            uint16_t gain;
+            uint16_t mode;
+            uint16_t rate;
+            uint16_t comparator;
+            uint16_t polarity;
+            uint16_t latch;
+            uint16_t queue;
+        } config;
 
         void showConfigRegister();
 };
