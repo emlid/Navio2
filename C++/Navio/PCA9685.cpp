@@ -108,7 +108,17 @@ void PCA9685::setFrequency(float frequency) {
  * @see PCA9685_RA_LED0_ON_L
  */
 void PCA9685::setPWM(uint8_t channel, uint16_t offset, uint16_t length) {
-    uint8_t data[4] = {offset & 0xFF, offset >> 8, length & 0xFF, length >> 8};
+    uint8_t data[4] = {0, 0, 0, 0};
+    if(length == 0) {
+        data[3] = 0x10;
+    } else if(length >= 4096) {
+        data[1] = 0x10;
+    } else {
+        data[0] = offset & 0xFF;
+        data[1] = offset >> 8;
+        data[2] = length & 0xFF;
+        data[3] = length >> 8;
+    }
     I2Cdev::writeBytes(i2cDev.c_str(), devAddr, PCA9685_RA_LED0_ON_L + 4 * channel, 4, data);
 }
 
