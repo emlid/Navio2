@@ -38,13 +38,13 @@ while 1:
 
 	# Reading all channels
 	volts = adc.readADCSingleEnded(0, gain, sps) / 1000
-	print "A0: %.4fmV " % (volts),
+	print "A0: %.4fV " % (volts),
 
 	volts = adc.readADCSingleEnded(1, gain, sps) / 1000
-	print "A1: %.4fmV " % (volts),
+	print "A1: %.4fV " % (volts),
 
 	volts = adc.readADCSingleEnded(2, gain, sps) / 1000
-	print "A2: %.4fmV " % (volts),
+	print "A2: %.4fV " % (volts),
 
 	volts = adc.readADCSingleEnded(3, gain, sps) / 1000
-	print "A3: %.4fmV" % (volts)
+	print "A3: %.4fV" % (volts)
