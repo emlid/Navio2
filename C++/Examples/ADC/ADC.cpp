@@ -39,7 +39,7 @@ int main() {
         i = (i + 1) % ARRAY_SIZE(muxes);
 
         for (int j = 0; j < ARRAY_SIZE(muxes); j++) {
-            printf("A%d: %.4fmV ", j, results[j] / 1000);
+            printf("A%d: %.4fV ", j, results[j] / 1000);
         }
         printf("\n");
     }
