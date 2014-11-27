@@ -20,8 +20,7 @@ make
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(array[0]))
 int main() {
 
-    ADS1115 adc(RASPBERRY_PI_MODEL_B_I2C, ADS1115_DEFAULT_ADDRESS);
-    //ADS1115 adc(RASPBERRY_PI_MODEL_A_I2C, ADS1115_DEFAULT_ADDRESS);
+    ADS1115 adc;
 
     adc.setMode(ADS1115_MODE_SINGLESHOT);
     adc.setRate(ADS1115_RATE_860); 

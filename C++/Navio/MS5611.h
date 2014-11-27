@@ -64,7 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class MS5611 {
     public:
-	    MS5611(const char *i2cDev, uint8_t address = MS5611_DEFAULT_ADDRESS);
+	    MS5611(uint8_t address = MS5611_DEFAULT_ADDRESS);
 
         void initialize();
         bool testConnection();
@@ -82,7 +82,6 @@ class MS5611 {
 	    float getPressure();
 
     private:
-        std::string i2cDev; // I2C bus
 	    uint8_t devAddr; // I2C device adress
 	    uint16_t C1, C2, C3, C4, C5, C6; // Calibration data
 	    uint32_t D1, D2; // Raw measurement data

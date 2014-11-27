@@ -41,8 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Default mode is singleshot
  * @param address
  */
-ADS1115::ADS1115(const char *i2cDev, uint8_t address) {
-    this->i2cDev = std::string(i2cDev);
+ADS1115::ADS1115(uint8_t address) {
     this->address = address;
     memset(&config, 0, sizeof(config));
     setGain(ADS1115_PGA_4P096);
@@ -60,7 +59,7 @@ ADS1115::~ADS1115() {
 */
 bool ADS1115::testConnection() {
     uint8_t data;
-    int8_t status = I2Cdev::readByte(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &data);
+    int8_t status = I2Cdev::readByte(address, ADS1115_RA_CONFIG, &data);
     if (status > 0)
         return true;
     else
@@ -78,7 +77,7 @@ void ADS1115::updateConfigRegister() {
         config.mode | config.rate | config.comparator |
         config.polarity | config.latch | config.queue;
 
-    if ( I2Cdev::writeWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, c) < 0) {
+    if ( I2Cdev::writeWord(address, ADS1115_RA_CONFIG, c) < 0) {
         fprintf(stderr, "Error while writing config\n");
     }
 }
@@ -99,12 +98,12 @@ int16_t ADS1115::getConversion() {
         /* Check for Operation Status. If it is 0 then we are ready to get data. Otherwise wait. */
         setOpStatus(ADS1115_OS_ACTIVE);
         while ((word.w & 0x80) == 0) {
-            if ( I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &word.w) < 0 )
+            if ( I2Cdev::readWord(address, ADS1115_RA_CONFIG, &word.w) < 0 )
                 fprintf(stderr, "Error while reading config\n");
         }
     }
 
-    if ( (I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONVERSION, &word.w)) < 0 ) {
+    if ( (I2Cdev::readWord(address, ADS1115_RA_CONVERSION, &word.w)) < 0 ) {
         fprintf(stderr, "Error while reading\n");
     }
     /* Exchange MSB and LSB */
@@ -214,7 +213,7 @@ void ADS1115::showConfigRegister() {
         uint16_t w;
         uint8_t b[2];
     } buf;
-    I2Cdev::readWord(i2cDev.c_str(), address, ADS1115_RA_CONFIG, &buf.w);
+    I2Cdev::readWord(address, ADS1115_RA_CONFIG, &buf.w);
 
     debug("Config Register: 0x%04x | 0x%02x 0x%02x", buf.w, buf.b[0], buf.b[1]);
 }

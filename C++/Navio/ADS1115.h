@@ -118,7 +118,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class ADS1115 {
     public:
-        ADS1115(const char *i2cDev, uint8_t address = ADS1115_DEFAULT_ADDRESS);
+        ADS1115(uint8_t address = ADS1115_DEFAULT_ADDRESS);
         ~ADS1115();
 
         bool testConnection();
@@ -149,7 +149,6 @@ class ADS1115 {
     private:
         void updateConfigRegister();
 
-        std::string i2cDev;
         uint8_t address;
 
         struct configRegister {

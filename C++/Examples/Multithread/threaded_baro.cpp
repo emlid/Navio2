@@ -38,7 +38,7 @@ void * acquireBarometerData(void * barom)
 
 int main()
 {
-    MS5611 baro(RASPBERRY_PI_MODEL_B_I2C, MS5611_DEFAULT_ADDRESS);
+    MS5611 baro;
     baro.initialize();
 
     pthread_t baro_thread;
