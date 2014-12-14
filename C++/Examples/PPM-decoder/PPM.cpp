@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 {
 	// Servo controller setup
 
-	pwm = new PCA9685(RASPBERRY_PI_MODEL_B_I2C, PCA9685_DEFAULT_ADDRESS);
+	pwm = new PCA9685();
 	pwm->initialize();
 	pwm->setFrequency(servoFrequency);
 
