@@ -41,6 +41,7 @@ Basic examples showing how to work with Navio's onboard devices using C++.
 * AccelGyroMag 
 * ADC
 * Barometer
+* FRAM
 * LED
 * Servo
 
