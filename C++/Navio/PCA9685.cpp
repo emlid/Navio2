@@ -72,8 +72,12 @@ void PCA9685::sleep() {
  * @see PCA9685_MODE1_RESTART_BIT
  */
 void PCA9685::restart() {
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_SLEEP_BIT, 0);
-    I2Cdev::writeBit(devAddr, PCA9685_RA_MODE1, PCA9685_MODE1_RESTART_BIT, 1);
+    I2Cdev::writeByte(devAddr, PCA9685_RA_MODE1, (1 << PCA9685_MODE1_SLEEP_BIT));
+    I2Cdev::writeByte(devAddr, PCA9685_RA_MODE1, ((1 << PCA9685_MODE1_SLEEP_BIT) 
+    											| (1 << PCA9685_MODE1_EXTCLK_BIT)));
+    I2Cdev::writeByte(devAddr, PCA9685_RA_MODE1, ((1 << PCA9685_MODE1_RESTART_BIT) 
+                                                | (1 << PCA9685_MODE1_EXTCLK_BIT)
+                                                | (1 << PCA9685_MODE1_AI_BIT)));
 }
 
 /** Calculate prescale value based on the specified frequency and write it to the device.
