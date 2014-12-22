@@ -42,6 +42,7 @@ Basic examples showing how to work with Navio's onboard devices using C++.
 * ADC
 * Barometer
 * FRAM
+* GPS
 * LED
 * Servo
 
