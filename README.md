@@ -38,7 +38,7 @@ C++ drivers for Navio's onboard devices and peripheral interfaces.
 
 ### Python
 
-Basic examples showing how to work with Navio's onboard devices using C++.
+Basic examples showing how to work with Navio's onboard devices using Python.
 
 * AccelGyroMag 
 * ADC
