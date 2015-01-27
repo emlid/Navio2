@@ -1,6 +1,8 @@
 Navio
 =====
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/emlid/Navio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Collection of drivers and examples for Navio - autopilot shield for Raspberry Pi.
 
 ## Repository structure
@@ -36,7 +38,7 @@ C++ drivers for Navio's onboard devices and peripheral interfaces.
 
 ### Python
 
-Basic examples showing how to work with Navio's onboard devices using C++.
+Basic examples showing how to work with Navio's onboard devices using Python.
 
 * AccelGyroMag 
 * ADC
