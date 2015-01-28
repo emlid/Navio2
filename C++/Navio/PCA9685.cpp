@@ -87,7 +87,7 @@ void PCA9685::restart() {
 float PCA9685::getFrequency() {
     uint8_t data;
     I2Cdev::readByte(devAddr, PCA9685_RA_PRE_SCALE, &data);
-    return 25000000.f / 4096.f / (data + 1);
+    return 24576000.f / 4096.f / (data + 1);
 }
 
 
@@ -98,7 +98,7 @@ float PCA9685::getFrequency() {
 void PCA9685::setFrequency(float frequency) {
     sleep();
     usleep(10000);
-    uint8_t prescale = roundf(25000000.f / 4096.f / frequency)  - 1;
+    uint8_t prescale = roundf(24576000.f / 4096.f / frequency)  - 1;
     I2Cdev::writeByte(devAddr, PCA9685_RA_PRE_SCALE, prescale);
     this->frequency = getFrequency();
     restart();
