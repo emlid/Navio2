@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
 	// GPIO setup
 
-	gpioCfgClock(samplingRate, PI_DEFAULT_CLK_PERIPHERAL, PI_DEFAULT_CLK_SOURCE);
+	gpioCfgClock(samplingRate, PI_DEFAULT_CLK_PERIPHERAL, 0); /* last parameter is deprecated now */
 	gpioInitialise();
 	previousTick = gpioTick();
 	gpioSetAlertFunc(ppmInputGpio, ppmOnEdge);
