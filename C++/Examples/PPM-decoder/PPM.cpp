@@ -15,6 +15,8 @@ sudo ./PPM
 #include <pigpio.h>
 #include <stdio.h>
 #include <unistd.h>
+
+#include <Navio/gpio.h>
 #include "Navio/PCA9685.h"
 
 //================================ Options =====================================
@@ -65,8 +67,21 @@ void ppmOnEdge(int gpio, int level, uint32_t tick)
 
 //================================== Main ======================================
 
+using namespace Navio;
+
 int main(int argc, char *argv[])
 {
+    static const uint8_t outputEnablePin = RPI_GPIO_27;
+
+    Pin pin(outputEnablePin);
+
+    if (pin.init()) {
+        pin.setMode(Pin::GpioModeOutput);
+        pin.write(0); /* drive Output Enable low */
+    } else {
+        fprintf(stderr, "Output Enable not set. Are you root?");
+    }
+
 	// Servo controller setup
 
 	pwm = new PCA9685();
