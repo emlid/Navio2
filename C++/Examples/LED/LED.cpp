@@ -13,10 +13,25 @@ make
 ./LED
 */
 
+#include <Navio/gpio.h>
+
 #include "Navio/PCA9685.h"
+
+using namespace Navio;
 
 int main()
 {
+    static const uint8_t outputEnablePin = RPI_GPIO_27;
+
+    Pin pin(outputEnablePin);
+
+    if (pin.init()) {
+        pin.setMode(Pin::GpioModeOutput);
+        pin.write(0); /* drive Output Enable low */
+    } else {
+        fprintf(stderr, "Output Enable not set. Are you root?");
+    }
+
     PCA9685 pwm;
     
     pwm.initialize();
