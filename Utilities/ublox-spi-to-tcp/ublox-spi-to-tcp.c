@@ -29,213 +29,207 @@ IP-address of your Raspberry Pi with Navio.
 #include <stdlib.h>
 #include <stdio.h>
 
-//==================== Helper function for error handling =====================
+/*==================== Helper function for error handling ===================== */
 
 void error(const char *error_message)
 {
-	fprintf(stderr, "%s\n", error_message);	
-	exit(1);
+    fprintf(stderr, "%s\n", error_message);
+    exit(1);
 }
 
-//=================================== Main ====================================
+/*=================================== Main ==================================== */
 int main(int argc, char *argv[])
 {
-	int status;
+    int status;
 
-	//=================== Checking command line arguments  ====================
+    /*=================== Checking command line arguments  ==================== */
 
-	if (argc < 2) {
-		printf("%s [tcp port number]", argv[0]);
-		exit(1);
-	}	
+    if (argc < 2) {
+        printf("%s [tcp port number]", argv[0]);
+        exit(1);
+    }
 
-	//============================= Open SPI ==================================
+    /*============================= Open SPI ================================== */
 
-	int spi_fd;
+    int spi_fd;
 
-	spi_fd = open("/dev/spidev0.0", O_RDWR);
-	if (spi_fd < 0) error("open() SPI error");
+    spi_fd = open("/dev/spidev0.0", O_RDWR);
+    if (spi_fd < 0) error("open() SPI error");
 
-	//============================= TCP setup =================================
-	
-	int server_socket;	
+    /*============================= TCP setup ================================= */
 
-	server_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (server_socket == 0) error("socket() error");
+    int server_socket;
 
-	struct sockaddr_in server_address = {0};
-	server_address.sin_family = AF_INET;
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == 0) error("socket() error");
+
+    struct sockaddr_in server_address = {0};
+    server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
-    server_address.sin_port = htons(atoi(argv[1]));	
+    server_address.sin_port = htons(atoi(argv[1]));
 
-	status = bind(server_socket, (struct sockaddr *) &server_address, sizeof(server_address));
-	if (status == -1) error("bind() error");
+    status = bind(server_socket, (struct sockaddr *) &server_address, sizeof(server_address));
+    if (status == -1) error("bind() error");
 
-	//===================== Waiting for TCP connection ========================
+    /*===================== Waiting for TCP connection ======================== */
 
-	int client_socket;
+    int client_socket;
 
-	struct sockaddr_in client_address;
+    struct sockaddr_in client_address;
     socklen_t address_size = sizeof(client_address);
 
     printf("Waiting for connection.\n");
 
     status = listen(server_socket, 5);
-	if (status == -1) error("listen() error");    
+    if (status == -1) error("listen() error");
 
     client_socket = accept(server_socket, (struct sockaddr *) &client_address, &address_size);
     if (client_socket == -1) printf("Acception error.");
     else printf("Connection accepted.\n");
 
-	//========================== Transfering data =============================
+    /*========================== Transfering data ============================= */
 
-	// SPI transfer buffers and settings
+    /* SPI transfer buffers and settings */
 
-	uint8_t txdata;
-	uint8_t rxdata;
+    uint8_t txdata;
+    uint8_t rxdata;
 
-	struct spi_ioc_transfer tr = {0};
+    struct spi_ioc_transfer tr = {0};
 
-	tr.tx_buf = (unsigned long)&txdata;
-	tr.rx_buf = (unsigned long)&rxdata;
-	tr.len = 1;
-	tr.speed_hz = 245000;
-	tr.bits_per_word = 8;
+    tr.tx_buf = (unsigned long)&txdata;
+    tr.rx_buf = (unsigned long)&rxdata;
+    tr.len = 1;
+    tr.speed_hz = 245000;
+    tr.bits_per_word = 8;
 
-	// UBX + NMEA scanner 
+    /* UBX + NMEA scanner */
 
-	enum State 
-	{
-		Message_Start, 
+    enum State
+    {
+        Message_Start, 
 
-		UBX_Sync2, 
-		UBX_Class, 
-		UBX_ID, 
-		UBX_Length_LSB, 
-		UBX_Length_MSB, 
-		UBX_Payload, 
-		UBX_CK_A, 
-		UBX_CK_B,	
+        UBX_Sync2,
+        UBX_Class,
+        UBX_ID,
+        UBX_Length_LSB,
+        UBX_Length_MSB,
+        UBX_Payload,
+        UBX_CK_A,
+        UBX_CK_B,
 
-		NMEA_Message
-	};
+        NMEA_Message
+    };
 
-	int state = Message_Start;
-	unsigned char message[1024];
-	unsigned int position = 0;
-	unsigned short ubx_payload_length;
+    int state = Message_Start;
+    unsigned char message[1024];
+    unsigned int position = 0;
+    unsigned short ubx_payload_length;
 
-	// Scanning and routing GPS messages
+    /* Scanning and routing GPS messagesa */
 
-	while (1)
-	{	
-		// Reading data from a TCP client
+    while (1) {
+        /* Reading data from a TCP client */
 
-		status = recv(client_socket, &txdata, 1, MSG_DONTWAIT);
-		if (status == 0) 
-		{
-			printf("Client disconnected.\n");
-			printf("Waiting for connection.\n");
-			listen(server_socket, 5); 
-			client_socket = accept(server_socket, (struct sockaddr *) &client_address, &address_size);
-			if (client_socket == -1) fprintf(stderr, "accept() error.");
-			else printf("Connection accepted.\n");	
-		}
-		if (status < 0) txdata = 0x00;
+        status = recv(client_socket, &txdata, 1, MSG_DONTWAIT);
+        if (status == 0) {
+            printf("Client disconnected.\n");
+            printf("Waiting for connection.\n");
+            listen(server_socket, 5); 
+            client_socket = accept(server_socket, (struct sockaddr *) &client_address, &address_size);
+            if (client_socket == -1) fprintf(stderr, "accept() error.");
+            else printf("Connection accepted.\n");
+        }
+        if (status < 0) txdata = 0x00;
 
-		// Performing SPI transfer			
-		
-		ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr);
+        /* Performing SPI transfer */
 
-		// Scanning incoming SPI data for messages
+        ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr);
 
-		message[position++] = rxdata;
+        /* Scanning incoming SPI data for messages */
 
-		switch (state) 
-		{
-		case Message_Start:
-			if (rxdata == 0xb5) 
-				state = UBX_Sync2;
-			else 
-				if (rxdata == '$')
-					state = NMEA_Message;
-				else
-				{
-					state = Message_Start;
-					position = 0;
-				}
-			break;
+        message[position++] = rxdata;
 
-		case UBX_Sync2:
-			if (rxdata == 0x62) 
-				state = UBX_Class;
-			else
-				if (rxdata == 0xb5)
-				{
-					state = Message_Start;
-					position = 1;
-				}
-				else
-				{
-					state = Message_Start;
-					position = 0;
-				}
-			break;
+        switch (state) 
+        {
+        case Message_Start:
+            if (rxdata == 0xb5) {
+                state = UBX_Sync2;
+            }
+            else 
+                if (rxdata == '$'){
+                    state = NMEA_Message;
+                }
+                else {
+                    state = Message_Start;
+                    position = 0;
+                }
+            break;
 
-		case UBX_Class:	
-			state = UBX_ID;
-			break;
+        case UBX_Sync2:
+            if (rxdata == 0x62) 
+                state = UBX_Class;
+            else
+                if (rxdata == 0xb5) {
+                    state = Message_Start;
+                    position = 1;
+                } else {
+                    state = Message_Start;
+                    position = 0;
+                }
+            break;
 
-		case UBX_ID:
-			state = UBX_Length_LSB;
-			break;
+        case UBX_Class:
+            state = UBX_ID;
+            break;
 
-		case UBX_Length_LSB:
-			ubx_payload_length = rxdata;
-			state = UBX_Length_MSB;
-			break;
+        case UBX_ID:
+            state = UBX_Length_LSB;
+            break;
 
-		case UBX_Length_MSB:
-			ubx_payload_length += rxdata << 8;
-			state = UBX_Payload;
-			break;
+        case UBX_Length_LSB:
+            ubx_payload_length = rxdata;
+            state = UBX_Length_MSB;
+            break;
 
-		case UBX_Payload:
-			if (position == ubx_payload_length + 6)
-				state = UBX_CK_A;
-			if (position >= 1022)
-			{
-				state = Message_Start;
-				position = 0;
-			}
-			break;
+        case UBX_Length_MSB:
+            ubx_payload_length += rxdata << 8;
+            state = UBX_Payload;
+            break;
 
-		case UBX_CK_A:
-			state = UBX_CK_B;
-			break;
-		
-		case UBX_CK_B:
-			// Sending the received message after getting the last symbol
-			send(client_socket, message, 6 + ubx_payload_length + 2, 0);
-			state = Message_Start;
-			position = 0;
-			break;
+        case UBX_Payload:
+            if (position == ubx_payload_length + 6)
+                state = UBX_CK_A;
+            if (position >= 1022) {
+                state = Message_Start;
+                position = 0;
+            }
+            break;
 
-		case NMEA_Message:
-			// Sending the message after receiveng the end symbol (LF) 
-			if (rxdata == '\n')
-				send(client_socket, message, position, 0);
+        case UBX_CK_A:
+            state = UBX_CK_B;
+            break;
 
-			if (rxdata == '\n' || position >= 80)
-			{
-				state = Message_Start;
-				position = 0;
-			}
-			break;
-		}
-	}
+        case UBX_CK_B:
+            /* Sending the received message after getting the last symbol */
+            send(client_socket, message, 6 + ubx_payload_length + 2, 0);
+            state = Message_Start;
+            position = 0;
+            break;
 
-	return 0 ;
+        case NMEA_Message:
+            /* Sending the message after receiveng the end symbol (LF)  */
+            if (rxdata == '\n')
+                send(client_socket, message, position, 0);
+
+            if (rxdata == '\n' || position >= 80) {
+                state = Message_Start;
+                position = 0;
+            }
+            break;
+        }
+    }
+
+    return 0 ;
 }
 
 
