@@ -63,6 +63,12 @@ int main(int argc, char *argv[])
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket == 0) error("socket() error");
 
+    int yes = 1;
+
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0 ) {
+        perror("setsockopt");
+    }
+
     struct sockaddr_in server_address = {0};
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
