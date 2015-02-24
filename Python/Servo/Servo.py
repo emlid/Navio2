@@ -18,6 +18,15 @@ from Adafruit_PWM_Servo_Driver import PWM
 import time
 import math
 
+import sys
+
+sys.path.append("..")
+from Navio import GPIO
+
+#drive Output Enable in PCA low
+pin = GPIO.Pin(27)
+pin.write(0)
+
 PCA9685_DEFAULT_ADDRESS = 0x40
 frequency = 50
 
