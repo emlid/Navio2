@@ -140,7 +140,7 @@ void PCA9685::setPWM(uint8_t channel, uint16_t length) {
  * @see PCA9685_RA_LED0_ON_L
  */
 void PCA9685::setPWMmS(uint8_t channel, float length_mS) {
-    setPWM(channel, round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+    setPWM(channel, round((length_mS * 4096.f) / (1000.f / frequency)));
 }
 
 /** Set channel's pulse length in microseconds
@@ -149,7 +149,7 @@ void PCA9685::setPWMmS(uint8_t channel, float length_mS) {
  * @see PCA9685_RA_LED0_ON_L
  */
 void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
-    setPWM(channel, round((length_uS * 4096.f) / (1000000.f / frequency) - 1));
+    setPWM(channel, round((length_uS * 4096.f) / (1000000.f / frequency)));
 }
 
 /** Set start offset of the pulse and it's length for all channels
@@ -175,7 +175,7 @@ void PCA9685::setAllPWM(uint16_t length) {
  * @see PCA9685_RA_ALL_LED_ON_L
  */
 void PCA9685::setAllPWMmS(float length_mS) {
-    setAllPWM(round((length_mS * 4096.f) / (1000.f / frequency) - 1));
+    setAllPWM(round((length_mS * 4096.f) / (1000.f / frequency)));
 }
 
 /** Set pulse length in microseconds for all channels
@@ -183,5 +183,5 @@ void PCA9685::setAllPWMmS(float length_mS) {
  * @see PCA9685_RA_ALL_LED_ON_L
  */
 void PCA9685::setAllPWMuS(float length_uS) {
-    setAllPWM(round((length_uS * 4096.f) / (1000000.f / frequency) - 1));
+    setAllPWM(round((length_uS * 4096.f) / (1000000.f / frequency)));
 }
