@@ -57,6 +57,8 @@ public:
                         unsigned short delay_usecs = 0)
     {
 		spi_ioc_transfer spi_transfer;
+		
+		memset(&spi_transfer, 0, sizeof(spi_ioc_transfer));
 
 		spi_transfer.tx_buf = (unsigned long)tx;
 		spi_transfer.rx_buf = (unsigned long)rx;
