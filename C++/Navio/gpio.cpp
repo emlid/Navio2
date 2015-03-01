@@ -51,6 +51,7 @@ bool Pin::_deinit()
         warnx("unmap failed");
         return false;
     }
+    return true;
 }
 
 bool Pin::init()
