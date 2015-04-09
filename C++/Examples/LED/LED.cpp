@@ -29,7 +29,7 @@ int main()
         pin.setMode(Pin::GpioModeOutput);
         pin.write(0); /* drive Output Enable low */
     } else {
-        fprintf(stderr, "Output Enable not set. Are you root?");
+        fprintf(stderr, "Output Enable not set. Are you root?\n");
     }
 
     PCA9685 pwm;
