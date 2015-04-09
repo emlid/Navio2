@@ -46,6 +46,7 @@ public:
     void    toggle();
 
 private:
+    int getRaspberryPiVersion() const;
     Pin (const Pin&);
     Pin& operator=(const Pin&);
 

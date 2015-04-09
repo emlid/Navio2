@@ -17,7 +17,8 @@
 
 /* Raspberry Pi GPIO memory */
 #define BCM2708_PERI_BASE   0x20000000
-#define GPIO_BASE           (BCM2708_PERI_BASE + 0x200000)
+#define BCM2709_PERI_BASE   0x3F000000
+#define GPIO_BASE(address)  (address + 0x200000)
 #define PAGE_SIZE           (4*1024)
 #define BLOCK_SIZE          (4*1024)
 
@@ -28,6 +29,8 @@
 #define GPIO_SET_HIGH       *(_gpio+7)  // sets   bits which are 1
 #define GPIO_SET_LOW        *(_gpio+10) // clears bits which are 1
 #define GPIO_GET(g)         (*(_gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
+
+#define MAX_SIZE_LINE       50
 
 using namespace Navio;
 
@@ -62,13 +65,15 @@ bool Pin::init()
         return false;
     }
 
+    uint32_t address = getRaspberryPiVersion() == 1? GPIO_BASE(BCM2708_PERI_BASE): GPIO_BASE(BCM2709_PERI_BASE);
+
     void *gpio_map = mmap(
         NULL,                 /* any adddress in our space will do */
         BLOCK_SIZE,           /* map length */
         PROT_READ|PROT_WRITE, /* enable reading & writting to mapped memory */
         MAP_SHARED,           /* shared with other processes */
         mem_fd,               /* file to map */
-        GPIO_BASE             /* offset to GPIO peripheral */
+        address               /* offset to GPIO peripheral */
     );
 
     if (gpio_map == MAP_FAILED) {
@@ -121,4 +126,35 @@ void Pin::write(uint8_t value)
 void Pin::toggle()
 {
     write(!read());
+}
+
+int Pin::getRaspberryPiVersion() const
+{
+    char buffer[MAX_SIZE_LINE];
+    const char* hardware_description_entry = "Hardware";
+    const char* v1 = "BCM2708";
+    const char* v2 = "BCM2709";
+    char* flag;
+    FILE* fd;
+
+    fd = fopen("/proc/cpuinfo", "r");
+
+    while (fgets(buffer, MAX_SIZE_LINE, fd) != NULL) {
+        flag = strstr(buffer, hardware_description_entry);
+
+        if (flag != NULL) {
+            if (strstr(buffer, v2) != NULL) {
+                fclose(fd);
+                return 2;
+            } else if (strstr(buffer, v1) != NULL) {
+                fclose(fd);
+                return 1;
+            }
+        }
+    }
+
+    /* defaults to 1 */
+    fprintf(stderr, "Could not detect RPi version, defaulting to 1\n");
+    fclose(fd);
+    return 1;
 }
