@@ -29,9 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MB85RC04.h"
 
-MB85RC04::MB85RC04(const char *i2cDev, uint8_t address)
+MB85RC04::MB85RC04(uint8_t address)
 {
-	this->i2cDev = std::string(i2cDev);
     this->device_address = address;
 }
 
@@ -39,14 +38,14 @@ uint8_t MB85RC04::readByte(uint16_t register_address, uint8_t* data)
 {
 	bool ninth_bit = register_address & 0x100;
 	uint8_t dev_address = device_address | ninth_bit;
-	return I2Cdev::readByte(i2cDev.c_str(), dev_address, register_address, data);
+	return I2Cdev::readByte(dev_address, register_address, data);
 }
 
 uint8_t MB85RC04::writeByte(uint16_t register_address, uint8_t data)
 {
 	bool ninth_bit = register_address & 0x100;
 	uint8_t dev_address = device_address | ninth_bit;
-	return I2Cdev::writeByte(i2cDev.c_str(), dev_address, register_address, data);
+	return I2Cdev::writeByte(dev_address, register_address, data);
 }
 
 uint8_t MB85RC04::writeBytes(uint16_t register_address, uint8_t length, uint8_t* data)
@@ -54,7 +53,7 @@ uint8_t MB85RC04::writeBytes(uint16_t register_address, uint8_t length, uint8_t*
 	bool ninth_bit = register_address & 0x100;
 	uint8_t dev_address = device_address | ninth_bit;
 
-	return I2Cdev::writeBytes(i2cDev.c_str(), dev_address, register_address, 3, data);
+	return I2Cdev::writeBytes(dev_address, register_address, 3, data);
 }
 
 uint8_t MB85RC04::readBytes(uint16_t register_address, uint8_t length, uint8_t* data)
@@ -62,5 +61,5 @@ uint8_t MB85RC04::readBytes(uint16_t register_address, uint8_t length, uint8_t* 
 	bool ninth_bit = register_address & 0x100;
 	uint8_t dev_address = device_address | ninth_bit;
 
-	return I2Cdev::readBytes(i2cDev.c_str(), dev_address, register_address, 3, data);
+	return I2Cdev::readBytes(dev_address, register_address, 3, data);
 }

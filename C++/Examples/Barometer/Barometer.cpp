@@ -15,23 +15,24 @@ make
 
 int main()
 {
-    MS5611 baro(RASPBERRY_PI_MODEL_B_I2C, MS5611_DEFAULT_ADDRESS);
-    // MS5611 baro(RASPBERRY_PI_MODEL_A_I2C, MS5611_DEFAULT_ADDRESS);
+    MS5611 barometer;
 
-    baro.initialize();
+    barometer.initialize();
 
     while (true) {
-        baro.refreshPressure();
+        barometer.refreshPressure();
         usleep(10000); // Waiting for pressure data ready
-        baro.readPressure();
+        barometer.readPressure();
 
-        baro.refreshTemperature();
+        barometer.refreshTemperature();
         usleep(10000); // Waiting for temperature data ready
-        baro.readTemperature();
+        barometer.readTemperature();
 
-        baro.calculatePressureAndTemperature();
+        barometer.calculatePressureAndTemperature();
 
-        printf("Temperature(C): %f Pressure(millibar): %f\n", baro.getTemperature(), baro.getPressure());
+        printf("Temperature(C): %f Pressure(millibar): %f\n", 
+                barometer.getTemperature(), barometer.getPressure());
+                
         sleep(1);
     }
 

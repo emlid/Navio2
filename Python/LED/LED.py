@@ -13,6 +13,16 @@ sudo python LED.py
 from Adafruit_PWM_Servo_Driver import PWM
 import time
 
+import sys
+
+sys.path.append('..')
+
+from Navio import GPIO
+
+#drive Output Enable in PCA low
+pin = GPIO.Pin(27)
+pin.write(0)
+
 pwm = PWM(0x40, debug=True)
 
 # Set frequency to 60 Hz
@@ -44,3 +54,5 @@ while (True):
   # time.sleep(1)
   # pwm.setPWM(0, 0, servoMax)
   # time.sleep(1)
+
+

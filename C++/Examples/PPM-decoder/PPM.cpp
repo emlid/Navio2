@@ -15,6 +15,8 @@ sudo ./PPM
 #include <pigpio.h>
 #include <stdio.h>
 #include <unistd.h>
+
+#include <Navio/gpio.h>
 #include "Navio/PCA9685.h"
 
 //================================ Options =====================================
@@ -23,7 +25,7 @@ unsigned int samplingRate      = 1;      // 1 microsecond (can be 1,2,4,5,10)
 unsigned int ppmInputGpio      = 4;      // PPM input on Navio's 2.54 header
 unsigned int ppmSyncLength     = 4000;   // Length of PPM sync pause
 unsigned int ppmChannelsNumber = 8;      // Number of channels packed in PPM
-undigned int servoFrequency    = 50;     // Servo control frequency
+unsigned int servoFrequency    = 50;     // Servo control frequency
 bool verboseOutputEnabled      = true;   // Output channels values to console
 
 //============================ Objects & data ==================================
@@ -65,17 +67,30 @@ void ppmOnEdge(int gpio, int level, uint32_t tick)
 
 //================================== Main ======================================
 
+using namespace Navio;
+
 int main(int argc, char *argv[])
 {
+    static const uint8_t outputEnablePin = RPI_GPIO_27;
+
+    Pin pin(outputEnablePin);
+
+    if (pin.init()) {
+        pin.setMode(Pin::GpioModeOutput);
+        pin.write(0); /* drive Output Enable low */
+    } else {
+        fprintf(stderr, "Output Enable not set. Are you root?");
+    }
+
 	// Servo controller setup
 
-	pwm = new PCA9685(RASPBERRY_PI_MODEL_B_I2C, PCA9685_DEFAULT_ADDRESS);
+	pwm = new PCA9685();
 	pwm->initialize();
 	pwm->setFrequency(servoFrequency);
 
 	// GPIO setup
 
-	gpioCfgClock(samplingRate, PI_DEFAULT_CLK_PERIPHERAL, PI_DEFAULT_CLK_SOURCE);
+	gpioCfgClock(samplingRate, PI_DEFAULT_CLK_PERIPHERAL, 0); /* last parameter is deprecated now */
 	gpioInitialise();
 	previousTick = gpioTick();
 	gpioSetAlertFunc(ppmInputGpio, ppmOnEdge);

@@ -32,8 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param address I2C address
  * @see MS5611_DEFAULT_ADDRESS
  */
-MS5611::MS5611(const char *i2cDev, uint8_t address) {
-    this->i2cDev = std::string(i2cDev);
+MS5611::MS5611(uint8_t address) {
     this->devAddr = address;
 }
 
@@ -43,17 +42,17 @@ MS5611::MS5611(const char *i2cDev, uint8_t address) {
 void MS5611::initialize() {
     // Reading 6 calibration data values
     uint8_t buff[2];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C1, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C1, 2, buff);
     C1 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C2, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C2, 2, buff);
     C2 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C3, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C3, 2, buff);
     C3 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C4, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C4, 2, buff);
     C4 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C5, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C5, 2, buff);
     C5 = buff[0]<<8 | buff[1];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_C6, 2, buff);
+    I2Cdev::readBytes(devAddr, MS5611_RA_C6, 2, buff);
     C6 = buff[0]<<8 | buff[1];
 
     update();
@@ -64,7 +63,7 @@ void MS5611::initialize() {
  */
 bool MS5611::testConnection() {
     uint8_t data;
-    int8_t status = I2Cdev::readByte(i2cDev.c_str(), devAddr, MS5611_RA_C0, &data);
+    int8_t status = I2Cdev::readByte(devAddr, MS5611_RA_C0, &data);
     if (status > 0)
         return true;
     else
@@ -76,7 +75,7 @@ bool MS5611::testConnection() {
  * @see MS5611_RA_D1_OSR_4096
  */
 void MS5611::refreshPressure(uint8_t OSR) {
-    I2Cdev::writeBytes(i2cDev.c_str(), devAddr, OSR, 0, 0);
+    I2Cdev::writeBytes(devAddr, OSR, 0, 0);
 }
 
 /** Read pressure value
@@ -84,7 +83,7 @@ void MS5611::refreshPressure(uint8_t OSR) {
 void MS5611::readPressure() {
     //
     uint8_t buffer[3];
-    I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_ADC, 3, buffer);
+    I2Cdev::readBytes(devAddr, MS5611_RA_ADC, 3, buffer);
     D1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
 }
 
@@ -93,14 +92,14 @@ void MS5611::readPressure() {
  * @see MS5611_RA_D2_OSR_4096
  */
 void MS5611::refreshTemperature(uint8_t OSR) {
-	I2Cdev::writeBytes(i2cDev.c_str(), devAddr, OSR, 0, 0);
+	I2Cdev::writeBytes(devAddr, OSR, 0, 0);
 }
 
 /** Read temperature value
  */
 void MS5611::readTemperature() {
 	uint8_t buffer[3];
-	I2Cdev::readBytes(i2cDev.c_str(), devAddr, MS5611_RA_ADC, 3, buffer);
+	I2Cdev::readBytes(devAddr, MS5611_RA_ADC, 3, buffer);
 	D2 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
 }
 
