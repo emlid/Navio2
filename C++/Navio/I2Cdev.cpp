@@ -204,6 +204,43 @@ int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8
     return count;
 }
 
+/** Read multiple bytes from an 8-bit device register without sending the register address. Required by MB85RC256(FRAM on Navio+)
+ * @param devAddr I2C slave device address
+ * @param regAddr First register regAddr to read from
+ * @param length Number of bytes to read
+ * @param data Buffer to store read data in
+ * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
+ * @return Number of bytes read (-1 indicates failure)
+ */
+int8_t I2Cdev::readBytesNoRegAddress(uint8_t devAddr, uint8_t length, uint8_t *data, uint16_t timeout) {
+    int8_t count = 0;
+    int fd = open(I2CDEV, O_RDWR);
+
+    if (fd < 0) {
+        fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
+        return(-1);
+    }
+    if (ioctl(fd, I2C_SLAVE, devAddr) < 0) {
+        fprintf(stderr, "Failed to select device: %s\n", strerror(errno));
+        close(fd);
+        return(-1);
+    }
+    count = read(fd, data, length);
+
+    if (count < 0) {
+        fprintf(stderr, "Failed to read device(%d): %s\n", count, ::strerror(errno));
+        close(fd);
+        return(-1);
+    } else if (count != length) {
+        fprintf(stderr, "Short read  from device, expected %d, got %d\n", length, count);
+        close(fd);
+        return(-1);
+    }
+    close(fd);
+
+    return count;
+}
+
 /** Read multiple words from a 16-bit device register.
  * @param devAddr I2C slave device address
  * @param regAddr First register regAddr to read from
