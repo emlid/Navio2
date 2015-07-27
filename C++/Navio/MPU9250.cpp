@@ -86,13 +86,13 @@ BITS_DLPF_CFG_2100HZ_NOLPF
 returns 1 if an error occurred
 -----------------------------------------------------------------------------------------------*/
 
-#define MPU_InitRegNum 17
+#define MPU_InitRegNum 16
 
 bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
 {
     uint8_t i = 0;
     uint8_t MPU_Init_Data[MPU_InitRegNum][2] = {
-        {0x80, MPUREG_PWR_MGMT_1},     // Reset Device
+        //{0x80, MPUREG_PWR_MGMT_1},     // Reset Device - Disabled because it seems to corrupt initialisation of AK8963
         {0x01, MPUREG_PWR_MGMT_1},     // Clock Source
         {0x00, MPUREG_PWR_MGMT_2},     // Enable Acc & Gyro
         {low_pass_filter, MPUREG_CONFIG},         // Use DLPF set Gyroscope bandwidth 184Hz, temperature bandwidth 188Hz
