@@ -123,7 +123,7 @@ bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
 
     for(i=0; i<MPU_InitRegNum; i++) {
         WriteReg(MPU_Init_Data[i][1], MPU_Init_Data[i][0]);
-        usleep(10000);  //I2C must slow down the write speed, otherwise it won't work
+        usleep(100000);  //I2C must slow down the write speed, otherwise it won't work
     }
 
     set_acc_scale(BITS_FS_16G);
