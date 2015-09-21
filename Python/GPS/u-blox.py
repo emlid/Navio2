@@ -129,9 +129,9 @@ while(1):
                         aaa = ubl.parse_ubx()
                         if(aaa != None):
                                 print "GPS Millisecond Time of Week: " + str(aaa[0]/1000) + " s"
-                                print "Longitude: " + str(aaa[1]/10000000)
-                                print "Latitude: " + str(aaa[2]/10000000)
-                                print "Height above Ellipsoid: " + str(aaa[3]/1000) + " m"
-                                print "Height above mean sea level: " + str(aaa[4]/1000) + " m"
-                                print "Horizontal Accuracy Estateimate: " + str(aaa[5]/1000) + " m"
-                                print "Vertical Accuracy Estateimate: " + str(aaa[6]/1000) + " m"
+                                print "Longitude: " + str(aaa[1]/10000000.0)
+                                print "Latitude: " + str(aaa[2]/10000000.0)
+                                print "Height above Ellipsoid: " + str(aaa[3]/1000.0) + " m"
+                                print "Height above mean sea level: " + str(aaa[4]/1000.0) + " m"
+                                print "Horizontal Accuracy Estateimate: " + str(aaa[5]/1000.0) + " m"
+                                print "Vertical Accuracy Estateimate: " + str(aaa[6]/1000.0) + " m"
