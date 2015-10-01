@@ -35,6 +35,6 @@ int main()
         printf("Gyr: %+05.3f %+05.3f %+05.3f ", gx, gy, gz);
 		printf("Mag: %+05.3f %+05.3f %+05.3f\n", mx, my, mz);
 
-        sleep(0.5);
+        usleep(500000);
     }
 }
