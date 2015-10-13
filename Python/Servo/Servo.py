@@ -38,7 +38,7 @@ SERVO_MAX_ms = 1.750 # mS
 SERVO_MIN = math.trunc((SERVO_MIN_ms * 4096.0) / (1000.0 / frequency) - 1)
 SERVO_MAX = math.trunc((SERVO_MAX_ms * 4096.0) / (1000.0 / frequency) - 1)
 
-pwm = PWM(0x40, debug=True)
+pwm = PWM(0x40, debug=False)
 
 # Set frequency to 60 Hz
 pwm.setPWMFreq(frequency)
