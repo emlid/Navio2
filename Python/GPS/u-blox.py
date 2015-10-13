@@ -134,4 +134,4 @@ while(1):
                                 print "Height above Ellipsoid: " + str(aaa[3]/1000.0) + " m"
                                 print "Height above mean sea level: " + str(aaa[4]/1000.0) + " m"
                                 print "Horizontal Accuracy Estateimate: " + str(aaa[5]/1000.0) + " m"
-                                print "Vertical Accuracy Estateimate: " + str(aaa[6]/1000.0) + " m"
+                                print "Vertical Accuracy Estateimate: " + str(aaa[6]/1000.0) + " m\n"
