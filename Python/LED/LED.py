@@ -23,7 +23,7 @@ from Navio import GPIO
 pin = GPIO.Pin(27)
 pin.write(0)
 
-pwm = PWM(0x40, debug=True)
+pwm = PWM(0x40, debug=False)
 
 # Set frequency to 60 Hz
 pwm.setPWMFreq(60)
