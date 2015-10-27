@@ -196,14 +196,19 @@ int UBXParser::decodeMessage(std::vector<double>& data)
                 // Second, we extract the needed data from the message buffer and save it to the vector.
 
                 //iTOW
-                data.push_back ((*(message+pos+9) << 24) | (*(message+pos+8) << 16) | (*(message+pos+7) << 8) | (*(message+pos+6)));
+                data.push_back ((unsigned)((*(message+pos+9) << 24) | (*(message+pos+8) << 16) | (*(message+pos+7) << 8) | (*(message+pos+6))));
                 //Longitude
                 data.push_back ((*(message+pos+13) << 24) | (*(message+pos+12) << 16) | (*(message+pos+11) << 8) | (*(message+pos+10)));
                 //Latitude
                 data.push_back ((*(message+pos+17) << 24) | (*(message+pos+16) << 16) | (*(message+pos+15) << 8) | (*(message+pos+14)));
-                //Height
+                //Height above Ellipsoid
                 data.push_back ((*(message+pos+21) << 24) | (*(message+pos+20) << 16) | (*(message+pos+19) << 8) | (*(message+pos+18)));
-
+		//Height above mean sea level
+		data.push_back ((*(message+pos+25) << 24) | (*(message+pos+24) << 16) | (*(message+pos+23) << 8) | (*(message+pos+22)));
+		//Horizontal Accuracy Estateimate
+                data.push_back ((unsigned)((*(message+pos+29) << 24) | (*(message+pos+28) << 16) | (*(message+pos+27) << 8) | (*(message+pos+26))));
+		//Vertical Accuracy Estateimate
+		data.push_back ((unsigned)((*(message+pos+33) << 24) | (*(message+pos+32) << 16) | (*(message+pos+31) << 8) | (*(message+pos+30))));
                 break;
 
         case 259:

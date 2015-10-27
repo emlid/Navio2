@@ -26,6 +26,6 @@ while(True):
 
 	baro.calculatePressureAndTemperature()
 
-	print "Temperature(C): ", baro.TEMP, "Pressure(millibar): ", baro.PRES
+	print "Temperature(C): %.6f" % (baro.TEMP), "Pressure(millibar): %.6f" % (baro.PRES)
 
 	time.sleep(1)
