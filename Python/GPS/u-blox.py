@@ -2,6 +2,7 @@ import copy
 import Queue
 import spidev
 import math
+import struct
 
 waiting_header = 0
 msg_class = 1
@@ -112,9 +113,7 @@ class U_blox:
                 curr_values = [0,0,0,0,0,0,0]
                 curr_mess = self.mess_queue.get(False)
                 if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
-                        for i in range(0, 7):
-                                for j in range(4, 0, -1):
-                                        curr_values[i] = (curr_values[i] << 8) + curr_mess.msg_payload[4*i + j - 1]
+                        curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
                         return curr_values
                 else: return None
 
