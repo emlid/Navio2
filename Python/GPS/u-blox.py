@@ -109,13 +109,64 @@ class U_blox:
                                 else:
                                         print("Error! Checksum doesn't match")
 
-        def parse_ubx(self):
-                curr_values = [0,0,0,0,0,0,0]
-                curr_mess = self.mess_queue.get(False)
-                if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
-                        curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
-                        return curr_values
-                else: return None
+	def parse_ubx(self):
+		curr_values = [0,0,0,0,0,0,0]
+		curr_mess = self.mess_queue.get(False)
+		if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
+			msg = NavPosllhMsg()
+			curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
+			msg.itow = curr_values[0]
+			msg.lon = curr_values[1]
+			msg.lat = curr_values[2]
+			msg.heightEll = curr_values[3]
+			msg.heightSea = curr_values[4]
+			msg.horAcc = curr_values[5]
+			msg.verAcc = curr_values[6]
+			return msg
+		
+		if((curr_mess.msg_class == 0x01) & (curr_mess.msg_id == 0x03)):
+			msg = NavStatusMsg()
+			msg.fixStatus = curr_mess.msg_payload[4]
+			msg.fixOk = curr_mess.msg_payload[5]
+			return msg
+		return None
+
+class NavStatusMsg:
+
+	def __init__(self):
+		self.fixOk = 0
+		self.fixStatus = 0
+
+	def __str__(self):
+		Status = "Reserved value. Current state unknown\n"
+		if   (self.fixStatus == 0x00): Status = "no fix\n"
+                elif (self.fixStatus == 0x01): Status = "dead reckoning only\n"
+                elif (self.fixStatus == 0x02): Status = "2D-fix\n"
+                elif (self.fixStatus == 0x03): Status = "3D-fix\n"
+                elif (self.fixStatus == 0x04): Status = "GPS + dead reckoning combined\n"
+                elif (self.fixStatus == 0x05): Status = "Time only fix\n"
+		return 'Current GPS status:\ngpsFixOk: {}\ngps Fix status: {}'.format(self.fixOk & 0x01, Status)
+
+class NavPosllhMsg:
+
+	def __init__(self):
+                self.itow=0
+		self.lon=0
+		self.lat=0
+		self.heightEll=0
+		self.heightSea=0
+		self.horAcc=0
+		self.verAcc=0
+
+	def __str__(self):
+                itow = "GPS Millisecond Time of Week: %d s" % (self.itow/1000)
+                lon = "Longitude: %.6f"  % (self.lon/10000000.0)
+                lat = "Latitude: %.6f" % (self.lat/10000000.0)
+                heightEll = "Height above Ellipsoid: %.3f m" % (self.heightEll/1000.0)
+                heightSea = "Height above mean sea level: %.3f m" % (self.heightSea/1000.0)
+                horAcc = "Horizontal Accuracy Estateimate: %.3f m" % (self.horAcc/1000.0)
+                verAcc = "Vertical Accuracy Estateimate: %.3f m" % (self.verAcc/1000.0)
+		return '{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(itow, lon, lat, heightEll, heightSea, horAcc, verAcc)
 
 ubl = U_blox()
 for ind in range(0, 10):
@@ -125,12 +176,5 @@ while(1):
         for byt in buffer:
                 ubl.scan_ubx(byt)
                 if(ubl.mess_queue.empty() != True):
-                        aaa = ubl.parse_ubx()
-                        if(aaa != None):
-                                print "GPS Millisecond Time of Week: " + str(aaa[0]/1000) + " s"
-                                print "Longitude: " + str(aaa[1]/10000000.0)
-                                print "Latitude: " + str(aaa[2]/10000000.0)
-                                print "Height above Ellipsoid: " + str(aaa[3]/1000.0) + " m"
-                                print "Height above mean sea level: " + str(aaa[4]/1000.0) + " m"
-                                print "Horizontal Accuracy Estateimate: " + str(aaa[5]/1000.0) + " m"
-                                print "Vertical Accuracy Estateimate: " + str(aaa[6]/1000.0) + " m"
+			msg = ubl.parse_ubx()
+			if (msg != None): print(msg)
