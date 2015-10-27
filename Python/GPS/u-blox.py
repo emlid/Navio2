@@ -2,11 +2,7 @@ import copy
 import Queue
 import spidev
 import math
-<<<<<<< HEAD
 import struct
-=======
-from ctypes import *
->>>>>>> refs/remotes/emlid/master
 
 waiting_header = 0
 msg_class = 1
@@ -113,51 +109,27 @@ class U_blox:
                                 else:
                                         print("Error! Checksum doesn't match")
 
-<<<<<<< HEAD
-	def parse_ubx(self):
-		curr_values = [0,0,0,0,0,0,0]
-		curr_mess = self.mess_queue.get(False)
-		if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
-			msg = NavPosllhMsg()
-			curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
-			msg.itow = curr_values[0]
-			msg.lon = curr_values[1]
-			msg.lat = curr_values[2]
-			msg.heightEll = curr_values[3]
-			msg.heightSea = curr_values[4]
-			msg.horAcc = curr_values[5]
-			msg.verAcc = curr_values[6]
-			return msg
-		
-		if((curr_mess.msg_class == 0x01) & (curr_mess.msg_id == 0x03)):
-=======
         def parse_ubx(self):
-                curr_values = [0,0,0,0,0,0,0]
-                curr_mess = self.mess_queue.get(False)
-                if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
-                        msg = NavPosllhMsg()
-                        for i in range(0, 7):
-                                for j in range(4, 0, -1):
-                                        curr_values[i] = (curr_values[i] << 8) + curr_mess.msg_payload[4*i + j - 1]
-			msg.itow = c_uint(curr_values[0]).value
-			msg.lon = c_int(curr_values[1]).value
-			msg.lat = c_int(curr_values[2]).value
-			msg.heightEll = c_int(curr_values[3]).value
-			msg.heightSea = c_int(curr_values[4]).value
-			msg.horAcc = c_uint(curr_values[5]).value
-			msg.verAcc = c_uint(curr_values[6]).value
-                        return msg
-                if((curr_mess.msg_class == 0x01) & (curr_mess.msg_id == 0x03)):
->>>>>>> refs/remotes/emlid/master
-			msg = NavStatusMsg()
-			msg.fixStatus = curr_mess.msg_payload[4]
-			msg.fixOk = curr_mess.msg_payload[5]
-			return msg
-<<<<<<< HEAD
-		return None
-=======
-                else : return None
->>>>>>> refs/remotes/emlid/master
+			curr_values = [0,0,0,0,0,0,0]
+			curr_mess = self.mess_queue.get(False)
+			if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
+				msg = NavPosllhMsg()
+				curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
+				msg.itow = curr_values[0]
+				msg.lon = curr_values[1]
+				msg.lat = curr_values[2]
+				msg.heightEll = curr_values[3]
+				msg.heightSea = curr_values[4]
+				msg.horAcc = curr_values[5]
+				msg.verAcc = curr_values[6]
+				return msg
+				
+			if((curr_mess.msg_class == 0x01) & (curr_mess.msg_id == 0x03)):
+				msg = NavStatusMsg()
+				msg.fixStatus = curr_mess.msg_payload[4]
+				msg.fixOk = curr_mess.msg_payload[5]
+				return msg
+			return None
 
 class NavStatusMsg:
 
@@ -194,11 +166,7 @@ class NavPosllhMsg:
                 heightSea = "Height above mean sea level: %.3f m" % (self.heightSea/1000.0)
                 horAcc = "Horizontal Accuracy Estateimate: %.3f m" % (self.horAcc/1000.0)
                 verAcc = "Vertical Accuracy Estateimate: %.3f m" % (self.verAcc/1000.0)
-<<<<<<< HEAD
 		return '{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(itow, lon, lat, heightEll, heightSea, horAcc, verAcc)
-=======
-		return '{}\n{}\n{}\n{}\n{}\n{}\n{}'.format(itow, lon, lat, heightEll, heightSea, horAcc, verAcc)
->>>>>>> refs/remotes/emlid/master
 
 ubl = U_blox()
 for ind in range(0, 10):
