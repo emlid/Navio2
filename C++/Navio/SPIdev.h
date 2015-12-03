@@ -52,7 +52,7 @@ public:
                         unsigned char *tx,
                         unsigned char *rx,
                         unsigned int length,
-                        unsigned int speed_hz = 1000000,
+                        unsigned int speed_hz = 15000000,
                         unsigned char bits_per_word = 8,
                         unsigned short delay_usecs = 0)
     {
