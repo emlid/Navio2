@@ -5,6 +5,9 @@ Adapted for Raspberry Pi by Mikhail Avkhimenia (mikhail.avkhimenia@emlid.com)
 
 #include "MPU9250.h"
 
+#define G_SI 9.80665
+#define PI   3.14159
+
 //-----------------------------------------------------------------------------------------------
 
 MPU9250::MPU9250()
@@ -18,8 +21,6 @@ usage: use these methods to read and write MPU9250 registers over SPI
 
 unsigned int MPU9250::WriteReg( uint8_t WriteAddr, uint8_t WriteData )
 {
-    unsigned int temp_val;
-
     unsigned char tx[2] = {WriteAddr, WriteData};
 	unsigned char rx[2] = {0};
 
@@ -30,9 +31,9 @@ unsigned int MPU9250::WriteReg( uint8_t WriteAddr, uint8_t WriteData )
 
 //-----------------------------------------------------------------------------------------------
 
-unsigned int  MPU9250::ReadReg( uint8_t WriteAddr, uint8_t WriteData )
+unsigned int MPU9250::ReadReg(uint8_t ReadAddr)
 {
-    return WriteReg(WriteAddr | READ_FLAG, WriteData);
+    return WriteReg(ReadAddr | READ_FLAG, 0x00);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ usage: call this function to know if SPI and MPU9250 are working correctly.
 returns true if mpu9250 answers
 -----------------------------------------------------------------------------------------------*/
 
-bool MPU9250::testConnection()
+bool MPU9250::probe()
 {
     unsigned int response;
     response=WriteReg(MPUREG_WHOAMI|READ_FLAG, 0x00);
@@ -73,8 +74,8 @@ bool MPU9250::testConnection()
 
 /*-----------------------------------------------------------------------------------------------
                                     INITIALIZATION
-usage: call this function at startup, giving the sample rate divider (raging from 0 to 255) and
-low pass filter value; suitable values are:
+usage: call this function at startup for initialize settings of sensor
+low pass filter suitable values are:
 BITS_DLPF_CFG_256HZ_NOLPF2
 BITS_DLPF_CFG_188HZ
 BITS_DLPF_CFG_98HZ
@@ -88,17 +89,17 @@ returns 1 if an error occurred
 
 #define MPU_InitRegNum 16
 
-bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
+bool MPU9250::initialize()
 {
     uint8_t i = 0;
     uint8_t MPU_Init_Data[MPU_InitRegNum][2] = {
         //{0x80, MPUREG_PWR_MGMT_1},     // Reset Device - Disabled because it seems to corrupt initialisation of AK8963
         {0x01, MPUREG_PWR_MGMT_1},     // Clock Source
         {0x00, MPUREG_PWR_MGMT_2},     // Enable Acc & Gyro
-        {low_pass_filter, MPUREG_CONFIG},         // Use DLPF set Gyroscope bandwidth 184Hz, temperature bandwidth 188Hz
+        {0x00, MPUREG_CONFIG},         // Use DLPF set Gyroscope bandwidth 184Hz, temperature bandwidth 188Hz
         {0x18, MPUREG_GYRO_CONFIG},    // +-2000dps
-        {0x08, MPUREG_ACCEL_CONFIG},   // +-4G
-        {0x09, MPUREG_ACCEL_CONFIG_2}, // Set Acc Data Rates, Enable Acc LPF , Bandwidth 184Hz
+        {3<<3, MPUREG_ACCEL_CONFIG},   // +-16G
+        {0x08, MPUREG_ACCEL_CONFIG_2}, // Set Acc Data Rates, Enable Acc LPF , Bandwidth 184Hz
         {0x30, MPUREG_INT_PIN_CFG},    //
         //{0x40, MPUREG_I2C_MST_CTRL},   // I2C Speed 348 kHz
         //{0x20, MPUREG_USER_CTRL},      // Enable AUX
@@ -118,16 +119,14 @@ bool MPU9250::initialize(int sample_rate_div, int low_pass_filter)
         {0x81, MPUREG_I2C_SLV0_CTRL}  //Enable I2C and set 1 byte
 
     };
-    //spi.format(8,0);
-    //spi.frequency(1000000);
+
+    set_acc_scale(BITS_FS_16G);
+    set_gyro_scale(BITS_FS_2000DPS);
 
     for(i=0; i<MPU_InitRegNum; i++) {
         WriteReg(MPU_Init_Data[i][1], MPU_Init_Data[i][0]);
         usleep(100000);  //I2C must slow down the write speed, otherwise it won't work
     }
-
-    set_acc_scale(BITS_FS_16G);
-    set_gyro_scale(BITS_FS_2000DPS);
 
     calib_mag();
     return 0;
@@ -260,11 +259,10 @@ void MPU9250::read_acc()
     int i;
     ReadRegs(MPUREG_ACCEL_XOUT_H,response,6);
     for(i=0; i<3; i++) {
-        bit_data=((int16_t)response[i*2]<<8)|response[i*2+1];
-        data=(float)bit_data;
-        accelerometer_data[i]=data/acc_divider;
+        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
+        data = (float)bit_data;
+        accelerometer_data[i] = G_SI * data / acc_divider;
     }
-
 }
 
 /*-----------------------------------------------------------------------------------------------
@@ -283,11 +281,10 @@ void MPU9250::read_gyro()
     int i;
     ReadRegs(MPUREG_GYRO_XOUT_H,response,6);
     for(i=0; i<3; i++) {
-        bit_data=((int16_t)response[i*2]<<8)|response[i*2+1];
-        data=(float)bit_data;
-        gyroscope_data[i]=data/gyro_divider;
+        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
+        data = (float)bit_data;
+        gyroscope_data[i] = (PI/180) * data / gyro_divider;
     }
-
 }
 
 /*-----------------------------------------------------------------------------------------------
