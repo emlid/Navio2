@@ -10,6 +10,7 @@ namespace Navio {
 #define RPI_GPIO_2    2    // Pin 3     SDA
 #define RPI_GPIO_3    3    // Pin 5     SCL
 #define RPI_GPIO_4    4    // Pin 7             NAVIO_PPM_INPUT
+#define RPI_GPIO_6    6
 #define RPI_GPIO_7    7    // Pin 26    CE1     NAVIO_MPU9250_CS
 #define RPI_GPIO_8    8    // Pin 24    CE0     NAVIO_UBLOX_CS
 #define RPI_GPIO_9    9    // Pin 21    MISO
