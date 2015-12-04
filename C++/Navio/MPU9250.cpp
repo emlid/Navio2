@@ -438,6 +438,61 @@ void MPU9250::read_all()
 }
 
 /*-----------------------------------------------------------------------------------------------
+                                          FIFO
+-----------------------------------------------------------------------------------------------*/
+uint16_t MPU9250::read_count_FIFO() {
+    uint8_t response[2];
+    uint16_t count;
+    ReadRegs(MPUREG_FIFO_COUNTH,response, 2);
+    count = (((uint16_t)response[0]) << 8) | response[1];
+    return count;
+}
+
+void MPU9250::enable_FIFO() {
+    WriteReg(MPUREG_USER_CTRL, BITS_FIFO_EN);
+    //WriteReg(MPUREG_CONFIG, BITS_FIFO_MODE);
+    WriteReg(MPUREG_FIFO_EN, BITS_FIFO_ACC_EN | BITS_FIFO_GYRO_EN);
+}
+
+void MPU9250::disable_FIFO() {
+    WriteReg(MPUREG_FIFO_EN, 0x00);
+}
+
+void MPU9250::reset_FIFO() {
+    WriteReg(MPUREG_USER_CTRL, BITS_FIFO_RST);
+    WriteReg(MPUREG_USER_CTRL, BITS_FIFO_EN);
+}
+
+uint8_t MPU9250::read_FIFO(float *acc_values, float *gyro_values) {
+    uint8_t sample_size = 12;
+    int samples_number = 0;
+    int i = 0, j = 0;
+    uint8_t response[512];
+    int16_t data_acc[256], data_gyro[256];
+    uint16_t fifo_count = read_count_FIFO();
+    if (fifo_count < sample_size | fifo_count > 256) {
+        reset_FIFO();
+        return 0;
+    }
+    if (fifo_count % sample_size) {
+        fifo_count = fifo_count / sample_size * sample_size;
+    }
+    ReadRegs(MPUREG_FIFO_R_W, response, fifo_count);
+
+    samples_number = fifo_count / sample_size;
+    for (i = 0; i < samples_number; i++) {
+        for (j = 0; j < 3; j++) {
+            data_acc[3*i+j] = ((int16_t)response[sample_size*i+2*j] << 8) | response[sample_size*i+2*j+1];
+            acc_values[3*i+j] = (float)data_acc[3*i+j] / acc_divider;
+            data_gyro[3*i+j] = ((int16_t)response[sample_size*i+2*j] << 8) | response[sample_size*i+2*j+1];
+            gyro_values[3*i+j] = (float)data_gyro[3*i+j] / gyro_divider;
+        }
+    }
+
+    return samples_number;
+}
+
+/*-----------------------------------------------------------------------------------------------
                                          GET VALUES
 usage: call this functions to read and get values
 returns accel, gyro and mag values

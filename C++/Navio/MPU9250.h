@@ -21,6 +21,12 @@ public:
     void read_gyro();
     void read_mag();
 
+    uint16_t read_count_FIFO();
+    void enable_FIFO();
+    void disable_FIFO();
+    void reset_FIFO();
+    uint8_t read_FIFO(float *acc_values, float *gyro_values);
+
     void getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz);
     void getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz);
 
@@ -224,6 +230,13 @@ private:
 #define BIT_INT_ANYRD_2CLEAR        0x10
 #define BIT_RAW_RDY_EN              0x01
 #define BIT_I2C_IF_DIS              0x10
+
+/*------FIFO configuration bits----------------------*/
+#define BITS_FIFO_EN                0x40
+#define BITS_FIFO_RST               0x04
+#define BITS_FIFO_MODE              0x40
+#define BITS_FIFO_ACC_EN            0x08
+#define BITS_FIFO_GYRO_EN           0x70
 
 #define READ_FLAG                   0x80
 
