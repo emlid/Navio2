@@ -9,12 +9,12 @@ Navio's onboard MPU9250 is connected to the SPI bus on Raspberry Pi
 and can be read through /dev/spidev0.1
 
 Because of high rate of output, it's recommented write values to the text file,
-using >> [name of file]. With increasing time delay FIFO buffer may overfill,
+using > [name of file]. With increasing time delay FIFO buffer may overfill,
 because of which it will be reset before a conclusion.
 
 To run this example navigate to the directory containing it and run following commands:
 make
-./FIFO >> [name of file]
+./FIFO > [name of file]
 */
 
 #include "Navio/MPU9250.h"
