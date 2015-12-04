@@ -484,7 +484,7 @@ uint8_t MPU9250::read_FIFO(float *acc_values, float *gyro_values) {
         for (j = 0; j < 3; j++) {
             data_acc[3*i+j] = ((int16_t)response[sample_size*i+2*j] << 8) | response[sample_size*i+2*j+1];
             acc_values[3*i+j] = (float)data_acc[3*i+j] / acc_divider;
-            data_gyro[3*i+j] = ((int16_t)response[sample_size*i+2*j] << 8) | response[sample_size*i+2*j+1];
+            data_gyro[3*i+j] = ((int16_t)response[sample_size*i+2*j+6] << 8) | response[sample_size*i+2*j+7];
             gyro_values[3*i+j] = (float)data_gyro[3*i+j] / gyro_divider;
         }
     }
