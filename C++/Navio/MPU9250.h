@@ -50,33 +50,33 @@ private:
 #endif //_MPU9250_H
 
 // MPU9250 registers
-#define MPUREG_XG_OFFS_TC 0x00
-#define MPUREG_YG_OFFS_TC 0x01
-#define MPUREG_ZG_OFFS_TC 0x02
-#define MPUREG_X_FINE_GAIN 0x03
-#define MPUREG_Y_FINE_GAIN 0x04
-#define MPUREG_Z_FINE_GAIN 0x05
-#define MPUREG_XA_OFFS_H 0x06
-#define MPUREG_XA_OFFS_L 0x07
-#define MPUREG_YA_OFFS_H 0x08
-#define MPUREG_YA_OFFS_L 0x09
-#define MPUREG_ZA_OFFS_H 0x0A
-#define MPUREG_ZA_OFFS_L 0x0B
-#define MPUREG_PRODUCT_ID 0x0C
-#define MPUREG_SELF_TEST_X 0x0D
-#define MPUREG_SELF_TEST_Y 0x0E
-#define MPUREG_SELF_TEST_Z 0x0F
-#define MPUREG_SELF_TEST_A 0x10
-#define MPUREG_XG_OFFS_USRH 0x13
-#define MPUREG_XG_OFFS_USRL 0x14
-#define MPUREG_YG_OFFS_USRH 0x15
-#define MPUREG_YG_OFFS_USRL 0x16
-#define MPUREG_ZG_OFFS_USRH 0x17
-#define MPUREG_ZG_OFFS_USRL 0x18
-#define MPUREG_SMPLRT_DIV 0x19
-#define MPUREG_CONFIG 0x1A
-#define MPUREG_GYRO_CONFIG 0x1B
-#define MPUREG_ACCEL_CONFIG 0x1C
+#define MPUREG_XG_OFFS_TC          0x00
+#define MPUREG_YG_OFFS_TC          0x01
+#define MPUREG_ZG_OFFS_TC          0x02
+#define MPUREG_X_FINE_GAIN         0x03
+#define MPUREG_Y_FINE_GAIN         0x04
+#define MPUREG_Z_FINE_GAIN         0x05
+#define MPUREG_XA_OFFS_H           0x06
+#define MPUREG_XA_OFFS_L           0x07
+#define MPUREG_YA_OFFS_H           0x08
+#define MPUREG_YA_OFFS_L           0x09
+#define MPUREG_ZA_OFFS_H           0x0A
+#define MPUREG_ZA_OFFS_L           0x0B
+#define MPUREG_PRODUCT_ID          0x0C
+#define MPUREG_SELF_TEST_X         0x0D
+#define MPUREG_SELF_TEST_Y         0x0E
+#define MPUREG_SELF_TEST_Z         0x0F
+#define MPUREG_SELF_TEST_A         0x10
+#define MPUREG_XG_OFFS_USRH        0x13
+#define MPUREG_XG_OFFS_USRL        0x14
+#define MPUREG_YG_OFFS_USRH        0x15
+#define MPUREG_YG_OFFS_USRL        0x16
+#define MPUREG_ZG_OFFS_USRH        0x17
+#define MPUREG_ZG_OFFS_USRL        0x18
+#define MPUREG_SMPLRT_DIV          0x19
+#define MPUREG_CONFIG              0x1A
+#define MPUREG_GYRO_CONFIG         0x1B
+#define MPUREG_ACCEL_CONFIG        0x1C
 #define MPUREG_ACCEL_CONFIG_2      0x1D
 #define MPUREG_LP_ACCEL_ODR        0x1E
 #define MPUREG_MOT_THR             0x1F
@@ -100,22 +100,22 @@ private:
 #define MPUREG_I2C_SLV4_CTRL       0x34
 #define MPUREG_I2C_SLV4_DI         0x35
 #define MPUREG_I2C_MST_STATUS      0x36
-#define MPUREG_INT_PIN_CFG 0x37
-#define MPUREG_INT_ENABLE 0x38
-#define MPUREG_ACCEL_XOUT_H 0x3B
-#define MPUREG_ACCEL_XOUT_L 0x3C
-#define MPUREG_ACCEL_YOUT_H 0x3D
-#define MPUREG_ACCEL_YOUT_L 0x3E
-#define MPUREG_ACCEL_ZOUT_H 0x3F
-#define MPUREG_ACCEL_ZOUT_L 0x40
-#define MPUREG_TEMP_OUT_H 0x41
-#define MPUREG_TEMP_OUT_L 0x42
-#define MPUREG_GYRO_XOUT_H 0x43
-#define MPUREG_GYRO_XOUT_L 0x44
-#define MPUREG_GYRO_YOUT_H 0x45
-#define MPUREG_GYRO_YOUT_L 0x46
-#define MPUREG_GYRO_ZOUT_H 0x47
-#define MPUREG_GYRO_ZOUT_L 0x48
+#define MPUREG_INT_PIN_CFG         0x37
+#define MPUREG_INT_ENABLE          0x38
+#define MPUREG_ACCEL_XOUT_H        0x3B
+#define MPUREG_ACCEL_XOUT_L        0x3C
+#define MPUREG_ACCEL_YOUT_H        0x3D
+#define MPUREG_ACCEL_YOUT_L        0x3E
+#define MPUREG_ACCEL_ZOUT_H        0x3F
+#define MPUREG_ACCEL_ZOUT_L        0x40
+#define MPUREG_TEMP_OUT_H          0x41
+#define MPUREG_TEMP_OUT_L          0x42
+#define MPUREG_GYRO_XOUT_H         0x43
+#define MPUREG_GYRO_XOUT_L         0x44
+#define MPUREG_GYRO_YOUT_H         0x45
+#define MPUREG_GYRO_YOUT_L         0x46
+#define MPUREG_GYRO_ZOUT_H         0x47
+#define MPUREG_GYRO_ZOUT_L         0x48
 #define MPUREG_EXT_SENS_DATA_00    0x49
 #define MPUREG_EXT_SENS_DATA_01    0x4A
 #define MPUREG_EXT_SENS_DATA_02    0x4B
@@ -147,18 +147,18 @@ private:
 #define MPUREG_I2C_MST_DELAY_CTRL  0x67
 #define MPUREG_SIGNAL_PATH_RESET   0x68
 #define MPUREG_MOT_DETECT_CTRL     0x69
-#define MPUREG_USER_CTRL 0x6A
-#define MPUREG_PWR_MGMT_1 0x6B
-#define MPUREG_PWR_MGMT_2 0x6C
-#define MPUREG_BANK_SEL 0x6D
-#define MPUREG_MEM_START_ADDR 0x6E
-#define MPUREG_MEM_R_W 0x6F
-#define MPUREG_DMP_CFG_1 0x70
-#define MPUREG_DMP_CFG_2 0x71
-#define MPUREG_FIFO_COUNTH 0x72
-#define MPUREG_FIFO_COUNTL 0x73
-#define MPUREG_FIFO_R_W 0x74
-#define MPUREG_WHOAMI 0x75
+#define MPUREG_USER_CTRL           0x6A
+#define MPUREG_PWR_MGMT_1          0x6B
+#define MPUREG_PWR_MGMT_2          0x6C
+#define MPUREG_BANK_SEL            0x6D
+#define MPUREG_MEM_START_ADDR      0x6E
+#define MPUREG_MEM_R_W             0x6F
+#define MPUREG_DMP_CFG_1           0x70
+#define MPUREG_DMP_CFG_2           0x71
+#define MPUREG_FIFO_COUNTH         0x72
+#define MPUREG_FIFO_COUNTL         0x73
+#define MPUREG_FIFO_R_W            0x74
+#define MPUREG_WHOAMI              0x75
 #define MPUREG_XA_OFFSET_H         0x77
 #define MPUREG_XA_OFFSET_L         0x78
 #define MPUREG_YA_OFFSET_H         0x7A
@@ -168,7 +168,7 @@ private:
 
 /* ---- AK8963 Reg In MPU9250 ----------------------------------------------- */
 
-#define AK8963_I2C_ADDR             0x0c//0x18
+#define AK8963_I2C_ADDR             0x0c  // should return 0x18
 #define AK8963_Device_ID            0x48
 
 // Read-only Reg
@@ -197,12 +197,12 @@ private:
 #define AK8963_ASAZ                 0x12
 
 // Configuration bits MPU9250
-#define BIT_SLEEP 0x40
-#define BIT_H_RESET 0x80
-#define BITS_CLKSEL 0x07
-#define MPU_CLK_SEL_PLLGYROX 0x01
-#define MPU_CLK_SEL_PLLGYROZ 0x03
-#define MPU_EXT_SYNC_GYROX 0x02
+#define BIT_SLEEP                   0x40
+#define BIT_H_RESET                 0x80
+#define BITS_CLKSEL                 0x07
+#define MPU_CLK_SEL_PLLGYROX        0x01
+#define MPU_CLK_SEL_PLLGYROZ        0x03
+#define MPU_EXT_SYNC_GYROX          0x02
 #define BITS_FS_250DPS              0x00
 #define BITS_FS_500DPS              0x08
 #define BITS_FS_1000DPS             0x10
@@ -225,7 +225,7 @@ private:
 #define BIT_RAW_RDY_EN              0x01
 #define BIT_I2C_IF_DIS              0x10
 
-#define READ_FLAG   0x80
+#define READ_FLAG                   0x80
 
 /* ---- Sensitivity --------------------------------------------------------- */
 
