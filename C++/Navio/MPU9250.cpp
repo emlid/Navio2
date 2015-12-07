@@ -63,10 +63,19 @@ returns true if mpu9250 answers
 
 bool MPU9250::probe()
 {
-    unsigned int response;
-    response=WriteReg(MPUREG_WHOAMI | READ_FLAG, 0x00);
+    uint8_t responseXG, responseM;
 
-    if (response == 0x71)
+    responseXG = ReadReg(MPUREG_WHOAMI | READ_FLAG);
+
+    WriteReg(MPUREG_USER_CTRL, 0x20);  // I2C Master mode
+    WriteReg(MPUREG_I2C_MST_CTRL, 0x0D); // I2C configuration multi-master  IIC 400KHz
+    WriteReg(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR | READ_FLAG); //Set the I2C slave addres of AK8963 and set for read.
+    WriteReg(MPUREG_I2C_SLV0_REG, AK8963_WIA); //I2C slave 0 register address from where to begin data transfer
+    WriteReg(MPUREG_I2C_SLV0_CTRL, 0x81); //Read 1 byte from the magnetometer
+    usleep(10000);
+    responseM = ReadReg(MPUREG_EXT_SENS_DATA_00);
+
+    if (responseXG == 0x71 && responseM == 0x48)
         return true;
     else
         return false;
@@ -230,82 +239,6 @@ unsigned int MPU9250::set_gyro_scale(int scale)
 }
 
 /*-----------------------------------------------------------------------------------------------
-                                WHO AM I?
-usage: call this function to know if SPI is working correctly. It checks the I2C address of the
-mpu9250 which should be 104 when in SPI mode.
-returns the I2C address (104)
------------------------------------------------------------------------------------------------*/
-
-unsigned int MPU9250::whoami()
-{
-    unsigned int response;
-    response = WriteReg(MPUREG_WHOAMI | READ_FLAG, 0x00);
-    return response;
-}
-
-/*-----------------------------------------------------------------------------------------------
-                                READ ACCELEROMETER
-usage: call this function to read accelerometer data. Axis represents selected axis:
-0 -> X axis
-1 -> Y axis
-2 -> Z axis
------------------------------------------------------------------------------------------------*/
-
-void MPU9250::read_acc()
-{
-    uint8_t response[6];
-    int16_t bit_data;
-    float data;
-    int i;
-    ReadRegs(MPUREG_ACCEL_XOUT_H,response,6);
-    for(i=0; i<3; i++) {
-        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
-        data = (float)bit_data;
-        accelerometer_data[i] = G_SI * data / acc_divider;
-    }
-}
-
-/*-----------------------------------------------------------------------------------------------
-                                READ GYROSCOPE
-usage: call this function to read gyroscope data. Axis represents selected axis:
-0 -> X axis
-1 -> Y axis
-2 -> Z axis
------------------------------------------------------------------------------------------------*/
-
-void MPU9250::read_gyro()
-{
-    uint8_t response[6];
-    int16_t bit_data;
-    float data;
-    int i;
-    ReadRegs(MPUREG_GYRO_XOUT_H,response,6);
-    for(i=0; i<3; i++) {
-        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
-        data = (float)bit_data;
-        gyroscope_data[i] = (PI/180) * data / gyro_divider;
-    }
-}
-
-/*-----------------------------------------------------------------------------------------------
-                                READ TEMPERATURE
-usage: call this function to read temperature data.
-returns the value in °C
------------------------------------------------------------------------------------------------*/
-
-void MPU9250::read_temp()
-{
-    uint8_t response[2];
-    int16_t bit_data;
-    float data;
-    ReadRegs(MPUREG_TEMP_OUT_H,response,2);
-
-    bit_data = ((int16_t)response[0] << 8) | response[1];
-    data = (float)bit_data;
-    temperature = (data / 340) + 36.53;
-}
-
-/*-----------------------------------------------------------------------------------------------
                                 READ ACCELEROMETER CALIBRATION
 usage: call this function to read accelerometer data. Axis represents selected axis:
 0 -> X axis
@@ -334,24 +267,6 @@ void MPU9250::calib_acc()
 
 //-----------------------------------------------------------------------------------------------
 
-uint8_t MPU9250::AK8963_whoami()
-{
-    uint8_t response;
-    WriteReg(MPUREG_I2C_SLV0_ADDR,AK8963_I2C_ADDR|READ_FLAG); //Set the I2C slave addres of AK8963 and set for read.
-    WriteReg(MPUREG_I2C_SLV0_REG, AK8963_WIA); //I2C slave 0 register address from where to begin data transfer
-    WriteReg(MPUREG_I2C_SLV0_CTRL, 0x81); //Read 1 byte from the magnetometer
-
-    //WriteReg(MPUREG_I2C_SLV0_CTRL, 0x81);    //Enable I2C and set bytes
-    usleep(10000);
-    response = WriteReg(MPUREG_EXT_SENS_DATA_00 | READ_FLAG, 0x00);    //Read I2C
-    //ReadRegs(MPUREG_EXT_SENS_DATA_00,response,1);
-    //response=WriteReg(MPUREG_I2C_SLV0_DO, 0x00);    //Read I2C
-
-    return response;
-}
-
-//-----------------------------------------------------------------------------------------------
-
 void MPU9250::calib_mag()
 {
     uint8_t response[3];
@@ -374,36 +289,13 @@ void MPU9250::calib_mag()
     }
 }
 
-//-----------------------------------------------------------------------------------------------
-
-void MPU9250::read_mag()
-{
-    uint8_t response[7];
-    int16_t bit_data;
-    float data;
-    int i;
-
-    WriteReg(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR | READ_FLAG); //Set the I2C slave addres of AK8963 and set for read.
-    WriteReg(MPUREG_I2C_SLV0_REG, AK8963_HXL); //I2C slave 0 register address from where to begin data transfer
-    WriteReg(MPUREG_I2C_SLV0_CTRL, 0x87); //Read 6 bytes from the magnetometer
-
-    usleep(10000);
-    ReadRegs(MPUREG_EXT_SENS_DATA_00, response, 7);
-    //must start your read from AK8963A register 0x03 and read seven bytes so that upon read of ST2 register 0x09 the AK8963A will unlatch the data registers for the next measurement.
-    for(i=0; i<3; i++) {
-        bit_data = ((int16_t)response[i*2+1] << 8) | response[i*2];
-        data = (float)bit_data;
-        magnetometer_data[i] = data*magnetometer_ASA[i];
-    }
-}
 
 //-----------------------------------------------------------------------------------------------
 
-void MPU9250::read_all()
+void MPU9250::update()
 {
     uint8_t response[21];
-    int16_t bit_data;
-    float data;
+    int16_t bit_data[3];
     int i;
 
     //Send I2C command at first
@@ -413,60 +305,32 @@ void MPU9250::read_all()
     //must start your read from AK8963A register 0x03 and read seven bytes so that upon read of ST2 register 0x09 the AK8963A will unlatch the data registers for the next measurement.
 
     ReadRegs(MPUREG_ACCEL_XOUT_H, response, 21);
+
     //Get accelerometer value
     for(i=0; i<3; i++) {
-        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
-        data = (float)bit_data;
-        accelerometer_data[i] = G_SI * data / acc_divider;
+        bit_data[i] = ((int16_t)response[i*2] << 8) | response[i*2+1];
     }
+    _ax = G_SI * bit_data[0] / acc_divider;
+    _ay = G_SI * bit_data[1] / acc_divider;
+    _az = G_SI * bit_data[2] / acc_divider;
+
     //Get temperature
-    bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
-    data = (float)bit_data;
-    temperature = ((data - 21) / 333.87) + 21;
+    bit_data[0] = ((int16_t)response[i*2] << 8) | response[i*2+1];
+    temperature = ((bit_data[0] - 21) / 333.87) + 21;
+
     //Get gyroscope value
     for(i=4; i<7; i++) {
-        bit_data = ((int16_t)response[i*2] << 8) | response[i*2+1];
-        data = (float)bit_data;
-        gyroscope_data[i-4] = (PI/180) * data / gyro_divider;
+        bit_data[i-4] = ((int16_t)response[i*2] << 8) | response[i*2+1];
     }
+    _gx = (PI / 180) * bit_data[0] / gyro_divider;
+    _gy = (PI / 180) * bit_data[1] / gyro_divider;
+    _gz = (PI / 180) * bit_data[2] / gyro_divider;
+
     //Get Magnetometer value
     for(i=7; i<10; i++) {
-        bit_data = ((int16_t)response[i*2+1] << 8) | response[i*2];
-        data = (float)bit_data;
-        magnetometer_data[i-7] = data * magnetometer_ASA[i-7];
+        bit_data[i-7] = ((int16_t)response[i*2+1] << 8) | response[i*2];
     }
-}
-
-/*-----------------------------------------------------------------------------------------------
-                                         GET VALUES
-usage: call this functions to read and get values
-returns accel, gyro and mag values
------------------------------------------------------------------------------------------------*/
-
-void MPU9250::getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz)
-{
-    read_all();
-    *ax = accelerometer_data[0];
-    *ay = accelerometer_data[1];
-    *az = accelerometer_data[2];
-    *gx = gyroscope_data[0];
-    *gy = gyroscope_data[1];
-    *gz = gyroscope_data[2];
-    *mx = magnetometer_data[0];
-    *my = magnetometer_data[1];
-    *mz = magnetometer_data[2];
-}
-
-//-----------------------------------------------------------------------------------------------
-
-void MPU9250::getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz)
-{
-    read_acc();
-    read_gyro();
-    *ax = accelerometer_data[0];
-    *ay = accelerometer_data[1];
-    *az = accelerometer_data[2];
-    *gx = gyroscope_data[0];
-    *gy = gyroscope_data[1];
-    *gz = gyroscope_data[2];
+    _mx = bit_data[0] * magnetometer_ASA[0];
+    _my = bit_data[1] * magnetometer_ASA[1];
+    _mz = bit_data[2] * magnetometer_ASA[2];
 }

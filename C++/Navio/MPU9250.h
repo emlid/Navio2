@@ -6,6 +6,7 @@ Adapted for Raspberry Pi by Mikhail Avkhimenia (mikhail.avkhimenia@emlid.com)
 #ifndef _MPU9250_H
 #define _MPU9250_H
 
+#include "SPIdev.h"
 #include "InertialSensor.h"
 
 class MPU9250 : public InertialSensor
@@ -15,14 +16,7 @@ public:
 
     bool initialize();
     bool probe();
-
-    void read_temp();
-    void read_acc();
-    void read_gyro();
-    void read_mag();
-
-    void getMotion9(float *ax, float *ay, float *az, float *gx, float *gy, float *gz, float *mx, float *my, float *mz);
-    void getMotion6(float *ax, float *ay, float *az, float *gx, float *gy, float *gz);
+    void update();
 
 private:
     unsigned int WriteReg(uint8_t WriteAddr, uint8_t WriteData);
@@ -34,11 +28,6 @@ private:
 
     void calib_acc();
     void calib_mag();
-
-    void read_all();
-
-    unsigned int whoami();
-    uint8_t AK8963_whoami();
 
     float acc_divider;
     float gyro_divider;
