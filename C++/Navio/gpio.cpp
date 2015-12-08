@@ -18,6 +18,7 @@
 /* Raspberry Pi GPIO memory */
 #define BCM2708_PERI_BASE   0x20000000
 #define BCM2709_PERI_BASE   0x3F000000
+#define BCM2835_PERI_BASE   0x20000000
 #define GPIO_BASE(address)  (address + 0x200000)
 #define PAGE_SIZE           (4*1024)
 #define BLOCK_SIZE          (4*1024)
@@ -65,7 +66,15 @@ bool Pin::init()
         return false;
     }
 
-    uint32_t address = getRaspberryPiVersion() == 1? GPIO_BASE(BCM2708_PERI_BASE): GPIO_BASE(BCM2709_PERI_BASE);
+    uint32_t address;
+    int version = getRaspberryPiVersion();
+    if (version == 1) {
+        address = GPIO_BASE(BCM2708_PERI_BASE);
+    } else if (version == 2) {
+        address = GPIO_BASE(BCM2709_PERI_BASE);
+    } else if (version == 3) {
+        address = GPIO_BASE(BCM2835_PERI_BASE);
+    }
 
     void *gpio_map = mmap(
         NULL,                 /* any adddress in our space will do */
@@ -134,6 +143,7 @@ int Pin::getRaspberryPiVersion() const
     const char* hardware_description_entry = "Hardware";
     const char* v1 = "BCM2708";
     const char* v2 = "BCM2709";
+    const char* v3 = "BCM2835";
     char* flag;
     FILE* fd;
 
@@ -143,7 +153,10 @@ int Pin::getRaspberryPiVersion() const
         flag = strstr(buffer, hardware_description_entry);
 
         if (flag != NULL) {
-            if (strstr(buffer, v2) != NULL) {
+            if (strstr(buffer, v3) != NULL) {
+                fclose(fd);
+                return 3;
+            } else if (strstr(buffer, v2) != NULL) {
                 fclose(fd);
                 return 2;
             } else if (strstr(buffer, v1) != NULL) {
