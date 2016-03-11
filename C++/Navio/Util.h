@@ -4,4 +4,4 @@
 
 int write_file(const char *path, const char *fmt, ...);
 int read_file(const char *path, const char *fmt, ...);
-int check_apm();
+bool check_apm();

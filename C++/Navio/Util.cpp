@@ -57,8 +57,14 @@ int read_file(const char *path, const char *fmt, ...)
     return ret;
 }
 
-int check_apm()
+bool check_apm()
 {
-    int check_status = system(SCRIPT_PATH);
-    return WEXITSTATUS(check_status);
+    int ret =  system("ps -AT | grep -c sched-timer > /dev/null");
+
+    if (WEXITSTATUS(ret) <= 0) {
+        fprintf(stderr, "APM is running. Can't launch the example\n");
+        return true;
+    }
+
+    return false;
 }
