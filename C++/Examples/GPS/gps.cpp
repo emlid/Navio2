@@ -16,10 +16,15 @@ make
 
 //#define _XOPEN_SOURCE 600
 #include "Navio/Ublox.h"
+#include "Navio/Util.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]){
+
+    if (check_apm()) {
+        return 1;
+    }
 
     // This vector is used to store location data, decoded from ubx messages.
     // After you decode at least one message successfully, the information is stored in vector

@@ -1,8 +1,13 @@
 #include "Navio/RGBled.h"
+#include "Navio/Util.h"
 
 int main()
 {
     RGBled led;
+
+    if (check_apm()) {
+        return 1;
+    }
 
     if(!led.initialize()) return EXIT_FAILURE;
     led.setColor(Colors::Yellow);

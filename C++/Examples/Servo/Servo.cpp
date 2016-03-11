@@ -15,6 +15,7 @@ sudo ./Servo
 
 #include <unistd.h>
 #include "Navio/PWM.h"
+#include "Navio/Util.h"
 
 #define PWM_OUTPUT 0
 #define SERVO_MIN 1.250 /*mS*/
@@ -23,6 +24,10 @@ sudo ./Servo
 int main()
 {
     PWM pwm;
+
+    if (check_apm()) {
+        return 1;
+    }
 
     if (!pwm.init(PWM_OUTPUT)) {
         fprintf(stderr, "Output Enable not set. Are you root?\n");

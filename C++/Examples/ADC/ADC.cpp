@@ -23,6 +23,10 @@ int main() {
 
     const char *channel_path = "/sys/kernel/rcio/adc/ch0";
 
+    if (check_apm()) {
+        return 1;
+    }
+
     while (true) {
         uint32_t conversion;
 
