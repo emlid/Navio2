@@ -7,6 +7,8 @@
 
 #include "Util.h"
 
+#define SCRIPT_PATH "../../../check_apm.sh"
+
 int write_file(const char *path, const char *fmt, ...)
 {
     errno = 0;
@@ -53,4 +55,10 @@ int read_file(const char *path, const char *fmt, ...)
         return -errno_bkp;
 
     return ret;
+}
+
+int check_apm()
+{
+    int check_status = system(SCRIPT_PATH);
+    return WEXITSTATUS(check_status);
 }

@@ -10,12 +10,17 @@ make
 */
 
 #include "Navio/MS5611.h"
+#include "Navio/Util.h"
 #include <unistd.h>
 #include <stdio.h>
 
 int main()
 {
     MS5611 barometer;
+
+    if (check_apm()) {
+        return 1;
+    }
 
     barometer.initialize();
 

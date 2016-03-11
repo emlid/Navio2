@@ -32,6 +32,7 @@ chrt -f -p 99 PID
 #include <sys/time.h>
 #include "Navio/MPU9250.h"
 #include "Navio/LSM9DS1.h"
+#include "Navio/Util.h"
 #include "AHRS.hpp"
 
 #define G_SI 9.80665
@@ -214,6 +215,10 @@ int main(int argc, char *argv[])
 {
     int parameter;
     char *sensor_name;
+
+    if (check_apm()) {
+        return 1;
+    }
 
     if (argc < 2) {
         printf("Enter parameter\n");
