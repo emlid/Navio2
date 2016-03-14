@@ -163,7 +163,7 @@ int UBXParser::decodeMessage(std::vector<double>& data)
 
     // Count the checksum
 
-    for (int i=2;i<(length-2);i++){
+    for (unsigned int i=2;i<(length-2);i++){
         CK_A += *(message+pos+i);
         CK_B += CK_A;
     }
@@ -256,7 +256,7 @@ int UBXParser::checkMessage()
 
     // Count the checksum
 
-    for (int i=2;i<(length-2);i++){
+    for (unsigned int i=2;i<(length-2);i++){
         CK_A += *(message+pos+i);
         CK_B += CK_A;
     }
