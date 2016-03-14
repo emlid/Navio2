@@ -33,6 +33,9 @@ import array
 
 class MPU9250:
 
+    G_SI = 9.80665
+    PI = 3.14159
+
     # MPU9250 registers
     __MPUREG_XG_OFFS_TC = 0x00
     __MPUREG_YG_OFFS_TC = 0x01
@@ -434,7 +437,7 @@ class MPU9250:
 
         for i in range(0, 3):
             data = self.byte_to_float(response[i*2:i*2+2])
-            self.accelerometer_data[i] = data/self.acc_divider
+            self.accelerometer_data[i] = self.G_SI*data/self.acc_divider
 
 # -----------------------------------------------------------------------------------------------
 #                                 READ GYROSCOPE
@@ -449,7 +452,7 @@ class MPU9250:
 
         for i in range(0, 3):
             data = self.byte_to_float(response[i*2:i*2+2])
-            self.gyroscope_data[i] = data/self.gyro_divider
+            self.gyroscope_data[i] = (self.PI/180)*data/self.gyro_divider
 
 # -----------------------------------------------------------------------------------------------
 #                                 READ TEMPERATURE
@@ -550,7 +553,7 @@ class MPU9250:
         # Get Accelerometer values
         for i in range(0, 3):
             data = self.byte_to_float(response[i*2:i*2+2])
-            self.accelerometer_data[i] = data/self.acc_divider
+            self.accelerometer_data[i] = self.G_SI*data/self.acc_divider
 
         # Get temperature
         i = 3
@@ -560,7 +563,7 @@ class MPU9250:
         # Get gyroscope values
         for i in range(4, 7):
             data = self.byte_to_float(response[i*2:i*2+2])
-            self.gyroscope_data[i-4] = data/self.gyro_divider
+            self.gyroscope_data[i-4] =(self.PI/180)*data/self.gyro_divider
 
         # Get magnetometer values
         for i in range(7, 10):
