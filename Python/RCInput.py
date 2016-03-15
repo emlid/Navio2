@@ -1,10 +1,8 @@
 import sys, time
 
-sys.path.append('..')
+import navio.rcinput
 
-import Navio.RCInput
-
-rcin = Navio.RCInput.RCin()
+rcin = navio.rcinput.RCInput()
 
 while (True):
     period = rcin.read(2)

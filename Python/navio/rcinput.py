@@ -1,4 +1,4 @@
-class RCin():
+class RCInput():
     CHANNEL_COUNT = 8
     channels = []
 

@@ -1,11 +1,9 @@
 import sys
 
-sys.path.append('..')
-
-from Navio import LEDS
+import navio.leds
 import time
 
-led = LEDS.Led()
+led = navio.leds.Led()
 
 led.setColor('Yellow')
 print "LED is yellow"

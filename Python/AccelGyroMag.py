@@ -30,8 +30,7 @@ import spidev
 import time
 import argparse 
 import sys
-from MPU9250 import MPU9250
-
+import navio.mpu9250
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", help = "Sensor selection: -i [sensor name]. Sensors names: mpu is MPU9250, lsm is LSM9DS1")
@@ -54,7 +53,7 @@ else:
     sys.exit(1)
 
 
-imu = MPU9250()
+imu = navio.mpu9250.MPU9250()
 
 print "Connection established: ", imu.testConnection()
 

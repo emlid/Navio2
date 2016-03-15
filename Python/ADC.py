@@ -1,10 +1,8 @@
 import sys, time
 
-sys.path.append('..')
+import navio.adc
 
-import Navio.ADC
-
-adc = Navio.ADC.ADC()
+adc = navio.adc.ADC()
 results = [0] * adc.channel_count
 
 while (True):

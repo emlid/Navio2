@@ -10,9 +10,9 @@ sudo python Barometer_example.py
 
 import time
 
-from MS5611 import MS5611
+import navio.ms5611
 
-baro = MS5611()
+baro = navio.ms5611.MS5611()
 baro.initialize()
 
 while(True):
