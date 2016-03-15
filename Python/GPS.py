@@ -165,7 +165,7 @@ class NavPosllhMsg:
 		heightSea = "Height above mean sea level: %.3f m" % (self.heightSea/1000.0)
 		horAcc = "Horizontal Accuracy Estateimate: %.3f m" % (self.horAcc/1000.0)
 		verAcc = "Vertical Accuracy Estateimate: %.3f m" % (self.verAcc/1000.0)
-		return '{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(itow, lon, lat, heightEll, heightSea, horAcc, verAcc)
+		return '{}\n{}\n{}\n{}\n{}\n{}\n{}'.format(itow, lon, lat, heightEll, heightSea, horAcc, verAcc)
 
 ubl = U_blox()
 for ind in range(0, 10):
