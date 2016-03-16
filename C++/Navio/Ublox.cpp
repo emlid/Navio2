@@ -142,7 +142,7 @@ void UBXParser::updateMessageData(){
 // Function decodeMessage() returns 1 in case of a successful message verification.
 // It looks through the buffer, checks 2 ubx protocol sync chars (0xb5 and 0x62),
 // counts the checksum and if everything is alright, defines the message type by id.
-// In this example we only decode one message: Nav-Posllh. It is possible to add more
+// In this example we only decode two messages: Nav-Status and Nav-Posllh. It is possible to add more
 // id cases
 
 int UBXParser::decodeMessage(std::vector<double>& data)
@@ -184,8 +184,9 @@ int UBXParser::decodeMessage(std::vector<double>& data)
     switch(id){
         case 258:
                 // ID for Nav-Posllh messages is 0x0102 == 258
-                // In this example we extract 4 variables - longitude, latitude,
-                // height above ellipsoid and iTOW - GPS Millisecond Time of Week
+                // In this example we extract 7 variables - longitude, latitude,
+                // height above ellipsoid and mean sea level, horizontal and vertical
+                // accuracy estimate and iTOW - GPS Millisecond Time of Week
 
                 // All the needed parameters are 4-byte numbers with little endianness.
                 // We know the current message and we want to update the info in the data vector.
@@ -203,12 +204,12 @@ int UBXParser::decodeMessage(std::vector<double>& data)
                 data.push_back ((*(message+pos+17) << 24) | (*(message+pos+16) << 16) | (*(message+pos+15) << 8) | (*(message+pos+14)));
                 //Height above Ellipsoid
                 data.push_back ((*(message+pos+21) << 24) | (*(message+pos+20) << 16) | (*(message+pos+19) << 8) | (*(message+pos+18)));
-		//Height above mean sea level
-		data.push_back ((*(message+pos+25) << 24) | (*(message+pos+24) << 16) | (*(message+pos+23) << 8) | (*(message+pos+22)));
-		//Horizontal Accuracy Estateimate
+                //Height above mean sea level
+                data.push_back ((*(message+pos+25) << 24) | (*(message+pos+24) << 16) | (*(message+pos+23) << 8) | (*(message+pos+22)));
+                //Horizontal Accuracy Estateimate
                 data.push_back ((unsigned)((*(message+pos+29) << 24) | (*(message+pos+28) << 16) | (*(message+pos+27) << 8) | (*(message+pos+26))));
-		//Vertical Accuracy Estateimate
-		data.push_back ((unsigned)((*(message+pos+33) << 24) | (*(message+pos+32) << 16) | (*(message+pos+31) << 8) | (*(message+pos+30))));
+                //Vertical Accuracy Estateimate
+                data.push_back ((unsigned)((*(message+pos+33) << 24) | (*(message+pos+32) << 16) | (*(message+pos+31) << 8) | (*(message+pos+30))));
                 break;
 
         case 259:
@@ -380,10 +381,13 @@ int Ublox::decodeMessages()
                 //
                 // in case if NAV-POSLLH messages we can do this:
                 // printf("decodeMessages(): \nCurrent location data:\n");
-                // printf("iTOW: %lf\n", position_data[0]/1000);
+                // printf("GPS Millisecond Time of Week: %lf\n", position_data[0]/1000);
                 // printf("Longitude: %lf\n", position_data[1]/10000000);
                 // printf("Latitude: %lf\n", position_data[2]/10000000);
-                // printf("Height: %lf\n", position_data[3]/100);
+                // printf("Height above Ellipsoid: %.3lf m\n", pos_data[3]/1000);
+                // printf("Height above mean sea level: %.3lf m\n", pos_data[4]/1000);
+                // printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
+                // printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);
                 //
                 // in case of NAV-STATUS messages we can do this:
                 //
@@ -462,12 +466,14 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                         if(parser->decodeMessage(position_data) == id)
                         {
                             // Now let's do something with the extracted information
-                            // in case of NAV-STATUS messages we can print the information like this:
-                            // printf("Current GPS fix status:\n");
-                            // printf("gpsFixOk: %lf\n", position_data[0]/1000);
-                            // printf("Latitude: %lf\n", position_data[2]/10000000);
+                            // in case of NAV-POSLLH messages we can print the information like this:
+                            // printf("GPS Millisecond Time of Week: %lf\n", position_data[0]/1000);
                             // printf("Longitude: %lf\n", position_data[1]/10000000);
-                            // printf("Height: %lf\n", position_data[3]/100);
+                            // printf("Latitude: %lf\n", position_data[2]/10000000);
+                            // printf("Height above Ellipsoid: %.3lf m\n", pos_data[3]/1000);
+                            // printf("Height above mean sea level: %.3lf m\n", pos_data[4]/1000);
+                            // printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
+                            // printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);
 
 
                             // You can see ubx message structure in ublox reference manual

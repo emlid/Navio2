@@ -11,7 +11,7 @@ from the stream and extract useful information from them.
 
 To run this example navigate to the directory containing it and run following commands:
 make
-./ublox
+./gps
 */
 
 //#define _XOPEN_SOURCE 600
@@ -44,13 +44,13 @@ int main(int argc, char *argv[]){
 
         // gps.decodeMessages();
         // You can use this function to decode all messages, incoming from the GPS receiver. The function starts an infinite loop.
-        // In this example we can only decode NAV-POSLLH messages, the others are simply ignored.
+        // In this example we can only decode NAV_STATUS and NAV-POSLLH messages, the others are simply ignored.
         // You can add new message types in function decodeMessage() of class UBXParser(see ublox.h)
 
 
         // Here, however we use a different approach. Instead of trying to extract info from every message(as done in decodeMessages()),
         // this function waits for a message of a specified type and gets you just the information you need
-        // In this example we decode NAV-POSLLH messages, adding new types, however is quite easy
+        // In this example we decode NAV_STATUS and NAV-POSLLH messages, adding new types, however is quite easy
 
         while (true)
         {
