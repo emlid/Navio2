@@ -1,5 +1,5 @@
 class ADC():
-    channel_count = 5
+    channel_count = 6
     channels = []
 
     def __init__(self):
