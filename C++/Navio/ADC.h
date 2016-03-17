@@ -14,6 +14,6 @@ public:
 private:
     int open_channel(int ch);
 
-    static const size_t CHANNEL_COUNT = 5;
+    static const size_t CHANNEL_COUNT = 6;
     int channels[CHANNEL_COUNT];
 };
