@@ -25,6 +25,7 @@ Basic examples showing how to work with Navio's onboard devices using C++.
 C++ drivers for Navio 2's onboard devices and peripheral interfaces.
 
 * MPU9250 SPI
+* LSM9DS1 SPI
 * U-blox SPI
 * MS5611 I2C
 * I2C driver
@@ -32,7 +33,16 @@ C++ drivers for Navio 2's onboard devices and peripheral interfaces.
 
 ### Python
 
-Python examples haven't been updated for Navio 2 yet.
+Basic examples showing how to work with Navio's onboard devices using Python.
+
+* AccelGyroMag
+* ADC
+* Barometer
+* GPS
+* LED
+* RCInput
+* Servo
+
 
 ### Utilities 
 
