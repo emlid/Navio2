@@ -32,7 +32,16 @@ C++ drivers for Navio 2's onboard devices and peripheral interfaces.
 
 ### Python
 
-Python examples haven't been updated for Navio 2 yet.
+Basic examples showing how to work with Navio's onboard devices using Python.
+
+* AccelGyroMag
+* ADC
+* Barometer
+* GPS
+* LED
+* RCInput
+* Servo
+
 
 ### Utilities 
 
