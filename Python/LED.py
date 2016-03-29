@@ -24,7 +24,7 @@ while (True):
     time.sleep(1)
 
     led.setColor('Magneta')
-    print "LED is magneta"
+    print "LED is magenta"
     time.sleep(1)
 
     led.setColor('Red')
