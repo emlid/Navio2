@@ -55,7 +55,10 @@ else:
 
 imu = navio.mpu9250.MPU9250()
 
-print "Connection established: ", imu.testConnection()
+if imu.testConnection():
+    print "Connection established: True"
+else:
+    sys.exit("Connection established: False")
 
 imu.initialize()
 
