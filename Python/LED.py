@@ -2,6 +2,9 @@ import sys
 
 import navio.leds
 import time
+import navio.util
+
+navio.util.check_apm()
 
 led = navio.leds.Led()
 

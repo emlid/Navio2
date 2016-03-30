@@ -31,6 +31,9 @@ import time
 import argparse 
 import sys
 import navio.mpu9250
+import navio.util
+
+navio.util.check_apm()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", help = "Sensor selection: -i [sensor name]. Sensors names: mpu is MPU9250, lsm is LSM9DS1")
