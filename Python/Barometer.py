@@ -11,6 +11,9 @@ sudo python Barometer_example.py
 import time
 
 import navio.ms5611
+import navio.util
+
+navio.util.check_apm()
 
 baro = navio.ms5611.MS5611()
 baro.initialize()

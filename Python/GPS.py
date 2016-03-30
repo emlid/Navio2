@@ -3,6 +3,9 @@ import Queue
 import spidev
 import math
 import struct
+import navio.util
+
+navio.util.check_apm()
 
 waiting_header = 0
 msg_class = 1

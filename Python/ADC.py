@@ -1,6 +1,9 @@
 import sys, time
 
 import navio.adc
+import navio.util
+
+navio.util.check_apm()
 
 adc = navio.adc.ADC()
 results = [0] * adc.channel_count
