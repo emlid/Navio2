@@ -1,5 +1,5 @@
 class RCInput():
-    CHANNEL_COUNT = 8
+    CHANNEL_COUNT = 14
     channels = []
 
     def __init__(self):
