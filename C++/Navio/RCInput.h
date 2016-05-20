@@ -13,6 +13,6 @@ public:
 private:
     int open_channel(int ch);
 
-    static const size_t CHANNEL_COUNT = 8;
+    static const size_t CHANNEL_COUNT = 14;
     int channels[CHANNEL_COUNT];
 };
