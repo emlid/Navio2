@@ -13,7 +13,7 @@ enum class Colors {
     Green,
     Blue,
     Cyan,
-    Magneta,
+    Magenta,
     Yellow,
     White};
 

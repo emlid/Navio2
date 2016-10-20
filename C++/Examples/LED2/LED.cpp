@@ -27,7 +27,7 @@ int main()
         printf("LED is blue\n");
         sleep(1);
 
-        led.setColor(Colors::Magneta);
+        led.setColor(Colors::Magenta);
         printf("LED is magenta\n");
         sleep(1);
 

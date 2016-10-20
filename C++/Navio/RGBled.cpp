@@ -39,7 +39,7 @@ void RGBled::setColor(Colors color)
     case Colors::Green: pinR->write(OFF); pinG->write(ON); pinB->write(OFF); break;
     case Colors::Blue: pinR->write(OFF); pinG->write(OFF); pinB->write(ON); break;
     case Colors::Cyan: pinR->write(OFF); pinG->write(ON); pinB->write(ON); break;
-    case Colors::Magneta: pinR->write(ON); pinG->write(OFF); pinB->write(ON); break;
+    case Colors::Magenta: pinR->write(ON); pinG->write(OFF); pinB->write(ON); break;
     case Colors::Yellow: pinR->write(ON); pinG->write(ON); pinB->write(OFF); break;
     case Colors::White: pinR->write(ON); pinG->write(ON); pinB->write(ON); break;
     }

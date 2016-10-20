@@ -26,7 +26,7 @@ while (True):
     print "LED is blue"
     time.sleep(1)
 
-    led.setColor('Magneta')
+    led.setColor('Magenta')
     print "LED is magenta"
     time.sleep(1)
 

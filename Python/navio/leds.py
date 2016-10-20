@@ -35,7 +35,7 @@ class Led():
         'Green':    (OFF, ON, OFF),
         'Blue':     (OFF, OFF, ON),
         'Cyan':     (OFF, ON, ON),
-        'Magneta':  (ON, OFF, ON),
+        'Magenta':  (ON, OFF, ON),
         'Yellow':   (ON,ON,OFF),
         'White':    (ON, ON, ON)
     }
