@@ -158,3 +158,11 @@ class MS5611:
 		self.readTemperature()
 
 		self.calculatePressureAndTemperature()
+
+	def test(self):
+		self.initialize()
+		self.update()
+		is_pressure_valid = 1000 <= self.PRES <= 1050
+		is_temp_valid = -40 <= self.TEMP <= 80
+
+		return is_pressure_valid and is_temp_valid
