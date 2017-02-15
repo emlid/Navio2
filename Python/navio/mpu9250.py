@@ -468,27 +468,6 @@ class MPU9250:
         self.temperature = (temp/340.0)+36.53
 
 # -----------------------------------------------------------------------------------------------
-#                                 READ ACCELEROMETER CALIBRATION
-# usage: call this function to read accelerometer data. Axis represents selected axis:
-# 0 -> X axis
-# 1 -> Y axis
-# 2 -> Z axis
-# returns Factory Trim value
-# -----------------------------------------------------------------------------------------------
-
-    def calib_acc(self):
-        temp_scale = self.ReadReg(self.__MPUREG_ACCEL_CONFIG)
-        self.set_acc_scale(self.__BITS_FS_8G)
-
-        response = self.ReadRegs(self.__MPUREG_SELF_TEST_X, 4)
-
-        self.calib_data[0] = ((response[0] & 11100000) >> 3) | ((response[3] & 00110000) >> 4)
-        self.calib_data[1] = ((response[1] & 11100000) >> 3) | ((response[3] & 00001100) >> 2)
-        self.calib_data[2] = ((response[2] & 11100000) >> 3) | ((response[3] & 00000011))
-
-        self.set_acc_scale(temp_scale)
-
-# -----------------------------------------------------------------------------------------------
 
     def AK8963_whoami(self):
         self.WriteReg(self.__MPUREG_I2C_SLV0_ADDR, self.__AK8963_I2C_ADDR | self.__READ_FLAG) #Set the I2C slave addres of AK8963 and set for read.
