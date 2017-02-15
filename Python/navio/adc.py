@@ -9,6 +9,7 @@ class ADC():
                 self.channels.append(f)
             except: 
                 print ("Can't open file /sys/kernel/rcio/adc/ch%d" % i)
+                raise
     
     def read(self, ch):
         value = self.channels[ch].read()
