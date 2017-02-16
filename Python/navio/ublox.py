@@ -117,7 +117,7 @@ class U_blox:
 		curr_mess = self.mess_queue.get(False)
 		if((curr_mess.msg_class  == 0x01) & (curr_mess.msg_id == 0x02)):
 			msg = NavPosllhMsg()
-			curr_values = struct.unpack("<IiiiiII", str(bytearray(curr_mess.msg_payload)))
+			curr_values = struct.unpack("<IiiiiII", bytes(bytearray(curr_mess.msg_payload)))
 			msg.itow = curr_values[0]
 			msg.lon = curr_values[1]
 			msg.lat = curr_values[2]
