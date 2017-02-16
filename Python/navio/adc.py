@@ -4,11 +4,8 @@ class ADC():
 
     def __init__(self):
         for i in range(0, self.channel_count):
-            try:
-                f = open("/sys/kernel/rcio/adc/ch%d" % i, "r")
-                self.channels.append(f)
-            except: 
-                raise
+            f = open("/sys/kernel/rcio/adc/ch%d" % i, "r")
+            self.channels.append(f)
     
     def read(self, ch):
         value = self.channels[ch].read()
