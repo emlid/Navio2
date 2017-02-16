@@ -15,7 +15,7 @@ length = 3
 payload = 4
 checksum = 5
 
-class U_blox_message:
+class UbloxMessage:
 	def __init__(self, msg_class = 0, msg_id = 0, msg_length = 0, msg_payload = []):
 		self.msg_class = msg_class
 		self.msg_id = msg_id 
@@ -28,11 +28,11 @@ class U_blox_message:
 		self.msg_length = 0
 		self.msg_payload = []
 
-class U_blox:
+class Ublox:
 
 	def __init__(self):
 		self.mess_queue = queue.Queue()
-		self.curr_mess = U_blox_message()
+		self.curr_mess = UbloxMessage()
 		self.bus = spidev.SpiDev()
 		self.bus.open(0,0)
 		self.state=0
