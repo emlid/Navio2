@@ -15,6 +15,9 @@ class PWM():
         return self
 
     def __exit__(self, *args):
+        self.deinitialize()
+
+    def deinitialize(self):
         with open(self.SYSFS_PWM_UNEXPORT_PATH, "a") as pwm_unexport:
             pwm_unexport.write(str(self.channel))
 
