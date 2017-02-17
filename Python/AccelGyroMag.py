@@ -49,14 +49,15 @@ args = parser.parse_args()
 
 if args.i == 'mpu':
     print "Selected: MPU9250"
+    imu = navio.mpu9250.MPU9250()
 elif args.i == 'lsm':
-    sys.exit( "Driver for LSM9DS1 is not implement yet")
+    print "Selected: LSM9DS1"
+    imu = navio.lsm9ds1.LSM9DS1()
 else:
     print "Wrong sensor name. Select: mpu or lsm"
     sys.exit(1)
 
 
-imu = navio.mpu9250.MPU9250()
 
 if imu.testConnection():
     print "Connection established: True"
