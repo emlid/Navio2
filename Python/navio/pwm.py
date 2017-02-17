@@ -11,7 +11,7 @@ class PWM():
         self.is_initialized = False
 
     def __enter__(self):
-        self.is_initialized = self.initialize()
+        self.initialize()
         return self
 
     def __exit__(self, *args):
@@ -32,7 +32,7 @@ class PWM():
         with open(self.channel_path + "enable", "w") as pwm_enable:
             pwm_enable.write("1")
 
-        return True
+        self.is_initialized = True
 
 
     def set_period(self, freq):
