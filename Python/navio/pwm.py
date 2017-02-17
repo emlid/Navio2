@@ -37,7 +37,7 @@ class PWM():
 
     def set_period(self, freq):
         if not self.is_initialized:
-            raise RuntimeError("ADC not initialized. Call initialize first")
+            raise RuntimeError("PWM not initialized. Call initialize first")
 
         period_ns = int(1e9/freq)
         with open(self.channel_path + "period",  "w") as pwm_period:
@@ -45,7 +45,7 @@ class PWM():
 
     def set_duty_cycle(self, period):
         if not self.is_initialized:
-            raise RuntimeError("ADC not initialized. Call initialize first")
+            raise RuntimeError("PWM not initialized. Call initialize first")
 
         period_ns = int(period*1e6)
         with open(self.channel_path + "duty_cycle", "w") as pwm_duty:
