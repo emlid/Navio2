@@ -4,10 +4,6 @@ OFF = 1
 class Pin():
     def __init__(self, folder_name):
         self.pin = folder_name
-        try:
-            open("/sys/class/leds/%s/brightness" % self.pin, "w")
-        except:
-            print "Can't open file 'brightness'"
     
     def write(self, value):
         with open("/sys/class/leds/%s/brightness" % self.pin, "w") as value_file:
