@@ -4,7 +4,8 @@ from setuptools import setup, find_packages
 setup(
     name="navio2",
     version="0.1.0",
-    license="GPL",
+    license="BSD",
+    description="Navio 2 device drivers",
     author="Georgii Staroselskii",
     author_email="georgii.staroselskii@emlid.com",
     url="https://github.com/emlid/navio2",
