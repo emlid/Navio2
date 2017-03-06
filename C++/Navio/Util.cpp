@@ -59,7 +59,7 @@ int read_file(const char *path, const char *fmt, ...)
 
 bool check_apm()
 {
-    int ret =  system("ps -AT | grep -c sched-timer > /dev/null");
+    int ret =  system("ps -AT | grep -c ap-timer > /dev/null");
 
     if (WEXITSTATUS(ret) <= 0) {
         fprintf(stderr, "APM is running. Can't launch the example\n");
