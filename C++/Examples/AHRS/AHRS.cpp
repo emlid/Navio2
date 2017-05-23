@@ -265,9 +265,9 @@ void AHRS::setGyroOffset()
         gy *= 180 / PI;
         gz *= 180 / PI;
 
-        offset[0] += (-gx*0.0175);
-        offset[1] += (-gy*0.0175);
-        offset[2] += (-gz*0.0175);
+        offset[0] += gx*0.0175;
+        offset[1] += gy*0.0175;
+        offset[2] += gz*0.0175;
 
         usleep(10000);
     }
@@ -412,7 +412,6 @@ std::string get_sensor_name(int argc, char *argv[])
 
         return "mpu";
     }
-
 }
 
 //============================== Main loop ====================================
