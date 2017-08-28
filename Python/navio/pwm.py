@@ -18,6 +18,8 @@ class PWM():
         self.deinitialize()
 
     def deinitialize(self):
+        if self.is_enabled:
+            self.disable()
         with open(self.SYSFS_PWM_UNEXPORT_PATH, "a") as pwm_unexport:
             pwm_unexport.write(str(self.channel))
 
@@ -29,11 +31,17 @@ class PWM():
             with open(self.SYSFS_PWM_EXPORT_PATH, "a") as pwm_export:
                 pwm_export.write(str(self.channel))
 
-        with open(self.channel_path + "enable", "w") as pwm_enable:
-            pwm_enable.write("1")
-
         self.is_initialized = True
 
+    def enable(self):
+        with open(self.channel_path + "enable", "w") as pwm_enable:
+            pwm_enable.write("1")
+            self.is_enabled = True
+
+    def disable(self):
+        with open(self.channel_path + "enable", "w") as pwm_enable:
+            pwm_enable.write("0")
+            self.is_enabled = False
 
     def set_period(self, freq):
         if not self.is_initialized:

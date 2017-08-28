@@ -12,6 +12,7 @@ SERVO_MAX = 1.750 #ms
 
 with navio.pwm.PWM(PWM_OUTPUT) as pwm:
     pwm.set_period(50)
+    pwm.enable()
 
     while (True):
         pwm.set_duty_cycle(SERVO_MIN)
