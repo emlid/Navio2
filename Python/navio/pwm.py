@@ -9,6 +9,7 @@ class PWM():
         self.channel = channel
         self.channel_path = self.SYSFS_PWM_PATH_BASE + "pwm{}/".format(self.channel)
         self.is_initialized = False
+        self.is_enabled = False
 
     def __enter__(self):
         self.initialize()
