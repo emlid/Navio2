@@ -245,13 +245,17 @@ class MPU9250:
         self.accelerometer_data = [0.0, 0.0, 0.0]
         self.magnetometer_data = [0.0, 0.0, 0.0]
 
+    def bus_open(self):
+        self.bus.open(self.spi_bus_number, self.spi_dev_number)
+        self.bus.max_speed_hz = 10000000
+
 # -----------------------------------------------------------------------------------------------
 #                                     REGISTER READ & WRITE
 # usage: use these methods to read and write MPU9250 registers over SPI
 # -----------------------------------------------------------------------------------------------
 
     def WriteReg(self, reg_address, data):
-        self.bus.open(self.spi_bus_number, self.spi_dev_number)
+        self.bus_open()
         tx = [reg_address, data]
         rx = self.bus.xfer2(tx)
         self.bus.close()
@@ -260,7 +264,7 @@ class MPU9250:
 # -----------------------------------------------------------------------------------------------
 
     def ReadReg(self, reg_address):
-        self.bus.open(self.spi_bus_number, self.spi_dev_number)
+        self.bus_open()
         tx = [reg_address | self.__READ_FLAG, 0x00]
         rx = self.bus.xfer2(tx)
         self.bus.close()
@@ -269,7 +273,7 @@ class MPU9250:
 # -----------------------------------------------------------------------------------------------
 
     def ReadRegs(self, reg_address, length):
-        self.bus.open(self.spi_bus_number, self.spi_dev_number)
+        self.bus_open()
         tx = [0] * (length + 1)
         tx[0] = reg_address | self.__READ_FLAG
 
