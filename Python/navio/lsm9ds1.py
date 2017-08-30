@@ -187,6 +187,10 @@ class LSM9DS1:
         self.magnetometer_data = [0.0, 0.0, 0.0]
         self.temperature = 0.0
 
+    def bus_open(self, dev_number):
+        self.bus.open(self.spi_bus_number, dev_number)
+        self.bus.max_speed_hz = 10000000
+
     def testConnection(self):
         responseXG = self.readReg(self.__DEVICE_ACC_GYRO, self.__LSM9DS1XG_WHO_AM_I)
         responseM =  self.readReg(self.__DEVICE_MAGNETOMETER, self.__LSM9DS1M_WHO_AM_I)
@@ -195,21 +199,21 @@ class LSM9DS1:
         return False
 
     def writeReg(self, dev_number, reg_address, data):
-        self.bus.open(self.spi_bus_number, dev_number)
+        self.bus_open(dev_number)
         tx = [reg_address, data]
         rx = self.bus.xfer2(tx)
         self.bus.close()
         return rx
 
     def readReg(self, dev_number, reg_address):
-        self.bus.open(self.spi_bus_number, dev_number)
+        self.bus_open(dev_number)
         tx = [reg_address | self.__READ_FLAG, 0x00]
         rx = self.bus.xfer2(tx)
         self.bus.close()
         return rx[1]
 
     def readRegs(self, dev_number, reg_address, length):
-        self.bus.open(self.spi_bus_number, dev_number)
+        self.bus_open(dev_number)
         tx = [0] * (length + 1)
 
         tx[0] = reg_address | self.__READ_FLAG
