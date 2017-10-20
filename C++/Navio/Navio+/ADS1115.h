@@ -114,7 +114,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ADS1115_COMP_QUE_ASSERT4    0x02 << ADS1115_COMP_SHIFT
 #define ADS1115_COMP_QUE_DISABLE    0x03 // default
 
-#include "I2Cdev.h"
+#include <Common/I2Cdev.h>
 
 class ADS1115 {
     public:

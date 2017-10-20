@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <math.h>
 #include <string>
-#include "I2Cdev.h"
+#include "../Common/I2Cdev.h"
 
 #define PCA9685_DEFAULT_ADDRESS     0x40 // All address pins low, Navio default
 

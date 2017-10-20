@@ -158,7 +158,7 @@ void PCA9685::setPWMuS(uint8_t channel, float length_uS) {
  * @see PCA9685_RA_ALL_LED_ON_L
  */
 void PCA9685::setAllPWM(uint16_t offset, uint16_t length) {
-    uint8_t data[4] = {offset & 0xFF, offset >> 8, length & 0xFF, length >> 8};
+    uint8_t data[4] = {static_cast<uint8_t>(offset & 0xFF), static_cast<uint8_t>(offset >> 8), static_cast<uint8_t>(length & 0xFF), static_cast<uint8_t>(length >> 8)};
     I2Cdev::writeBytes(devAddr, PCA9685_RA_ALL_LED_ON_L, 4, data);
 }
 

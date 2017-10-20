@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "I2Cdev.h"
+#include <Common/I2Cdev.h>
 
 class MB85RC256
 {
