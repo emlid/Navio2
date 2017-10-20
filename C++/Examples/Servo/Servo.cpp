@@ -14,35 +14,65 @@ sudo ./Servo
 */
 
 #include <unistd.h>
-#include "Navio/PWM.h"
-#include "Navio/Util.h"
+#include "Navio2/PWM.h"
+#include "Navio+/RCOutput_Navio.h"
+#include "Navio2/RCOutput_Navio2.h"
+#include "Common/Util.h"
+#include <unistd.h>
+#include <memory>
+
+#define SERVO_MIN 1250 /*mS*/
+#define SERVO_MAX 1750 /*mS*/
 
 #define PWM_OUTPUT 0
-#define SERVO_MIN 1.250 /*mS*/
-#define SERVO_MAX 1.750 /*mS*/
 
-int main()
+
+using namespace Navio;
+
+std::unique_ptr <RCOutput> get_rcout()
 {
-    PWM pwm;
-
-    if (check_apm()) {
-        return 1;
+    if (get_navio_version() == NAVIO2)
+    {
+        auto ptr = std::unique_ptr <RCOutput>{ new RCOutput_Navio2() };
+        return ptr;
+    } else
+    {
+        auto ptr = std::unique_ptr <RCOutput>{ new RCOutput_Navio() };
+        return ptr;
     }
 
-    if (!pwm.init(PWM_OUTPUT)) {
-        fprintf(stderr, "Output Enable not set. Are you root?\n");
-        return 0;
-    }
+}
 
-    pwm.enable(PWM_OUTPUT);
-    pwm.set_period(PWM_OUTPUT, 50);
+int main(int argc, char *argv[])
+{
 
-    while (true) {
-        pwm.set_duty_cycle(PWM_OUTPUT, SERVO_MIN);
-        sleep(1);
-        pwm.set_duty_cycle(PWM_OUTPUT, SERVO_MAX);
-        sleep(1);
-    }
+        auto pwm = get_rcout();
+
+        if (check_apm()) {
+            return 1;
+        }
+
+        if (getuid()) {
+            fprintf(stderr, "Not root. Please launch like this: sudo %s\n", argv[0]);
+        }
+
+
+        if( !(pwm->initialize(PWM_OUTPUT)) ) {
+            return 1;
+        }
+        
+	pwm->set_frequency(PWM_OUTPUT, 50);
+
+	if ( !(pwm->enable(PWM_OUTPUT)) ) {
+	    return 1;
+	}
+
+        while (true) {
+            pwm->set_duty_cycle(PWM_OUTPUT, SERVO_MIN);
+            sleep(1);
+            pwm->set_duty_cycle(PWM_OUTPUT, SERVO_MAX);
+            sleep(1);
+        }
 
     return 0;
 }
