@@ -5,7 +5,7 @@
 #include <err.h>
 
 #include "ADC.h"
-#include "Util.h"
+#include <Common/Util.h>
 
 #define ADC_SYSFS_PATH "/sys/kernel/rcio/adc"
 
