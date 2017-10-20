@@ -9,8 +9,8 @@ make
 ./Barometer
 */
 
-#include "Navio/MS5611.h"
-#include "Navio/Util.h"
+#include <Common/MS5611.h>
+#include <Common/Util.h>
 #include <unistd.h>
 #include <stdio.h>
 
