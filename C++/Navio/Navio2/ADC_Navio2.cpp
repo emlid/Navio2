@@ -4,21 +4,21 @@
 #include <cstdlib>
 #include <err.h>
 
-#include "ADC.h"
+#include "ADC_Navio2.h"
 #include <Common/Util.h>
 
 #define ADC_SYSFS_PATH "/sys/kernel/rcio/adc"
 
-ADC::ADC()
+ADC_Navio2::ADC_Navio2()
 {
 
 }
 
-ADC::~ADC()
+ADC_Navio2::~ADC_Navio2()
 {
 }
 
-void ADC::init()
+void ADC_Navio2::initialize()
 {
     for (size_t i = 0; i < ARRAY_SIZE(channels); i++) {
         channels[i] = open_channel(i);
@@ -28,13 +28,18 @@ void ADC::init()
     }
 }
 
-int ADC::get_channel_count(void)
+int ADC_Navio2::get_channel_count(void)
 {
     return CHANNEL_COUNT;
 }
 
-int ADC::read(int ch)
+int ADC_Navio2::read(int ch)
 {
+    if (ch > ARRAY_SIZE(channels) )
+	{
+        fprintf(stderr,"Channel number too large\n");
+        return -1;
+	}
     char buffer[10];
 
     if (::pread(channels[ch], buffer, ARRAY_SIZE(buffer), 0) < 0) {
@@ -44,7 +49,7 @@ int ADC::read(int ch)
     return atoi(buffer);
 }
 
-int ADC::open_channel(int channel)
+int ADC_Navio2::open_channel(int channel)
 {
     char *channel_path;
     if (asprintf(&channel_path, "%s/ch%d", ADC_SYSFS_PATH, channel) == -1) {
