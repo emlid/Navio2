@@ -1,6 +1,9 @@
-MODULES = AccelGyroMag ADC AHRS Barometer GPS LED2 Servo RCInput
+MODULES = AccelGyroMag ADC AHRS Barometer FRAM GPS LED Multithread Servo RCInput
 
 all:
+	cd ../Navio; \
+	($(MAKE) ); \
+	cd ../Examples; \
 	for dir in $(MODULES); do \
 	cd $$dir; \
 	($(MAKE) ); \
