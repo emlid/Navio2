@@ -3,7 +3,7 @@ NAVIO = ../../Navio
 INCLUDES = -I ../../Navio
 
 all:
-	$(CC) $(INCLUDES) FRAM.cpp $(NAVIO)/Navio+/MB85RC256.cpp $(NAVIO)/Common/I2Cdev.cpp $(NAVIO)/Common/Util.cpp -o FRAM
+	$(CC) $(INCLUDES) FRAM.cpp -L$(NAVIO) -lnavio -o FRAM
 
 clean:
 	rm FRAM

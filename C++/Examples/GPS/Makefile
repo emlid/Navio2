@@ -1,22 +1,11 @@
 CXX ?=g++
 CFLAGS=-c -Wall
-NAVIO = ../..//Navio/Common
+NAVIO = ../../Navio
 INCLUDES = -I ../../Navio
 
-all: gps
-
-gps: gps.o Ublox.o Util.o
-	$(CXX) gps.o Ublox.o Util.o -o gps
+all:
+	$(CXX) -std=c++11 $(INCLUDES) gps.cpp -L$(NAVIO) -lnavio -o gps
 	rm -rf *.o
-
-gps.o: gps.cpp
-	$(CXX) $(INCLUDES) $(CFLAGS) gps.cpp
-
-Ublox.o: $(NAVIO)/Ublox.cpp
-	$(CXX) $(INCLUDES) $(CFLAGS) $(NAVIO)/Ublox.cpp
-
-Util.o: $(NAVIO)/Util.cpp
-	$(CXX) $(INCLUDES) $(CFLAGS) $(NAVIO)/Util.cpp
 
 clean:
 	rm -rf *.o gps
