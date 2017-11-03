@@ -55,6 +55,7 @@ MSG_NAV_DOP       = 0x04
 MSG_NAV_EKFSTATUS = 0x40
 MSG_NAV_SBAS      = 0x32
 MSG_NAV_SOL       = 0x06
+MSG_NAV_PVT       = 0x07
 
 # RXM messages
 MSG_RXM_RAW    = 0x10
@@ -376,6 +377,14 @@ msg_types = {
     (CLASS_NAV, MSG_NAV_POSLLH) : UBloxDescriptor('NAV_POSLLH',
                                                   '<IiiiiII', 
                                                   ['iTOW', 'Longitude', 'Latitude', 'height', 'hMSL', 'hAcc', 'vAcc']),
+    (CLASS_NAV, MSG_NAV_PVT) : UBloxDescriptor('NAV_PVT',
+                                                  '<IHBBBBBBIiBBBBiiiiIIiiiiiIIHBBBBBBihH',
+                                                  ['iTOW', 'year', 'month', 'day', 'hour', 'min', 'sec', 'valid',
+                                                   'tAcc', 'nano', 'fixType', 'flags', 'flags2', 'numSV', 'lon',
+                                                   'lat', 'height', 'hMSL', 'hAcc', 'vAcc', 'velN', 'velE', 'velD',
+                                                   'gSpeed', 'headMot', 'sAcc', 'headAcc', 'pDOP', 'reserved1',
+                                                   'reserved2', 'reserved3','reserved4','reserved5','reserved6',
+                                                   'headVeh', 'magDec', 'magAcc']),
     (CLASS_NAV, MSG_NAV_VELNED) : UBloxDescriptor('NAV_VELNED',
                                                   '<IiiiIIiII', 
                                                   ['iTOW', 'velN', 'velE', 'velD', 'speed', 'gSpeed', 'heading', 
