@@ -26,38 +26,47 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import spidev
 import time
 import argparse 
 import sys
-import navio.mpu9250
-import navio.util
 
-navio.util.check_apm()
+import navio.Common.mpu9250
+import navio.Common.util
+import navio.Navio2.lsm9ds1
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", help = "Sensor selection: -i [sensor name]. Sensors names: mpu is MPU9250, lsm is LSM9DS1")
+navio.Common.util.check_apm()
 
-if len(sys.argv) == 1:
-    print "Enter parameter"
-    parser.print_help()
-    sys.exit(1)
-elif len(sys.argv) == 2:
-    sys.exit("Enter sensor name: mpu or lsm")
+def get_inertial_sensor():
 
-args = parser.parse_args()
+    if (navio.Common.util.get_navio_version() == "NAVIO2"):
 
-if args.i == 'mpu':
-    print "Selected: MPU9250"
-    imu = navio.mpu9250.MPU9250()
-elif args.i == 'lsm':
-    print "Selected: LSM9DS1"
-    imu = navio.lsm9ds1.LSM9DS1()
-else:
-    print "Wrong sensor name. Select: mpu or lsm"
-    sys.exit(1)
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-i", help = "Sensor selection: -i [sensor name]. Sensors names: mpu is MPU9250, lsm is LSM9DS1")
+
+        if len(sys.argv) == 1:
+            print "Enter parameter"
+            parser.print_help()
+            sys.exit(1)
+        elif len(sys.argv) == 2:
+            sys.exit("Enter sensor name: mpu or lsm")
+
+        args = parser.parse_args()
+
+        if args.i == 'mpu':
+            print "Selected: MPU9250"
+            return navio.Common.mpu9250.MPU9250()
+        elif args.i == 'lsm':
+            print "Selected: LSM9DS1"
+            return navio.Navio2.lsm9ds1.LSM9DS1()
+        else:
+            print "Wrong sensor name. Select: mpu or lsm"
+            sys.exit(1)
+    else:
+        print "Selected: MPU9250"
+        return navio.Common.mpu9250.MPU9250()
 
 
+imu = get_inertial_sensor();
 
 if imu.testConnection():
     print "Connection established: True"
@@ -69,23 +78,23 @@ imu.initialize()
 time.sleep(1)
 
 while True:
-	# imu.read_all()
-	# imu.read_gyro()
-	# imu.read_acc()
-	# imu.read_temp()
-	# imu.read_mag()
+    # imu.read_all()
+    # imu.read_gyro()
+    # imu.read_acc()
+    # imu.read_temp()
+    # imu.read_mag()
 
-	# print "Accelerometer: ", imu.accelerometer_data
-	# print "Gyroscope:     ", imu.gyroscope_data
-	# print "Temperature:   ", imu.temperature
-	# print "Magnetometer:  ", imu.magnetometer_data
+    # print "Accelerometer: ", imu.accelerometer_data
+    # print "Gyroscope:     ", imu.gyroscope_data
+    # print "Temperature:   ", imu.temperature
+    # print "Magnetometer:  ", imu.magnetometer_data
 
-	# time.sleep(0.1)
+    # time.sleep(0.1)
 
-	m9a, m9g, m9m = imu.getMotion9()
+    m9a, m9g, m9m = imu.getMotion9()
 
-	print "Acc:", "{:+7.3f}".format(m9a[0]), "{:+7.3f}".format(m9a[1]), "{:+7.3f}".format(m9a[2]),
-	print " Gyr:", "{:+8.3f}".format(m9g[0]), "{:+8.3f}".format(m9g[1]), "{:+8.3f}".format(m9g[2]),
-	print " Mag:", "{:+7.3f}".format(m9m[0]), "{:+7.3f}".format(m9m[1]), "{:+7.3f}".format(m9m[2])
+    print "Acc:", "{:+7.3f}".format(m9a[0]), "{:+7.3f}".format(m9a[1]), "{:+7.3f}".format(m9a[2]),
+    print " Gyr:", "{:+8.3f}".format(m9g[0]), "{:+8.3f}".format(m9g[1]), "{:+8.3f}".format(m9g[2]),
+    print " Mag:", "{:+7.3f}".format(m9m[0]), "{:+7.3f}".format(m9m[1]), "{:+7.3f}".format(m9m[2])
 
-	time.sleep(0.5)
+    time.sleep(0.5)
