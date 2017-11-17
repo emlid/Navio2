@@ -11,4 +11,4 @@ all: $(OBJECTS)
 	ar rcs libnavio.a $(OBJECTS)
 
 clean:
-	rm -f */*.o
+	rm -f */*.o *.a
