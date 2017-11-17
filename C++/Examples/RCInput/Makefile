@@ -12,5 +12,5 @@ all:
 	$(CXX) -std=gnu++11 $(INCLUDES) $(LIB) RCInput.cpp -L$(NAVIO) -lnavio -o RCInput -lrt -lpthread -lpigpio || $(MAKE) pigpio
 
 clean:
-	rm RCInput
+	rm -f RCInput
 

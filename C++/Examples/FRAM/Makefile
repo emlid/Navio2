@@ -7,4 +7,4 @@ all:
 	$(CC) $(INCLUDES) FRAM.cpp -L$(NAVIO) -lnavio -o FRAM
 
 clean:
-	rm FRAM
+	rm -f FRAM

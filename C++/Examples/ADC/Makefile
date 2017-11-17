@@ -7,4 +7,4 @@ all:
 	$(CXX) -std=gnu++11 $(INCLUDES)  ADC.cpp -L$(NAVIO) -lnavio -o ADC
 
 clean:
-	rm ADC
+	rm -f ADC
