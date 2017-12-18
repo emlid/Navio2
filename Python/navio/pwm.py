@@ -20,6 +20,7 @@ class PWM():
 
     def deinitialize(self):
         if self.is_enabled:
+            self.set_period(1)
             self.disable()
         with open(self.SYSFS_PWM_UNEXPORT_PATH, "a") as pwm_unexport:
             pwm_unexport.write(str(self.channel))
