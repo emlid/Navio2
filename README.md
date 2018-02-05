@@ -50,4 +50,11 @@ Applications and utilities for Navio.
 
 * 3D IMU visualizer
 * U-blox SPI to PTY bridge utility
-* U-blox SPI to TCP bridge utility 
+* U-blox SPI to TCP bridge utility
+
+### Problem with pigpio.h
+
+If you have got error: `fatal error: pigpio.h: No such file or directory`, install `pigpio` by commands:
+
+    sudo apt-get update
+    sudo apt-get install pigpio
