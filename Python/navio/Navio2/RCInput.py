@@ -11,7 +11,11 @@ class RCInput():
                 print ("Can't open file /sys/kernel/rcio/rcin/ch%d" % i)
     
     def read(self, ch):
-        value = self.channels[ch].read()
-        position = self.channels[ch].seek(0, 0)
-        return value[:-1]
-        
+        try:
+            value = self.channels[ch].read()
+            position = self.channels[ch].seek(0, 0)
+            return value[:-1]
+        except IndexError:
+            print ("Channel number too large")
+            exit(1)
+

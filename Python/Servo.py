@@ -1,16 +1,24 @@
-import sys
 import time
+import os
 
-import navio.pwm
-import navio.util
+import navio.Common.util
 
-navio.util.check_apm()
+if navio.Common.util.get_navio_version() == "NAVIO2":
+    import navio.Navio2.RCOutput as RCOutput
+else:
+    import navio.Navio.RCOutput as RCOutput
 
+SERVO_MIN = 1.250  # ms
+SERVO_MAX = 1.750  # ms
 PWM_OUTPUT = 0
-SERVO_MIN = 1.250 #ms
-SERVO_MAX = 1.750 #ms
 
-with navio.pwm.PWM(PWM_OUTPUT) as pwm:
+if (os.getuid() != 0):
+    print "Not root. Please, launch like this: sudo python Servo.py"
+    exit(-1)
+
+navio.Common.util.check_apm()
+
+with RCOutput(PWM_OUTPUT) as pwm:
     pwm.set_period(50)
     pwm.enable()
 

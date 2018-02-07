@@ -1,6 +1,6 @@
 import os.path
 
-class PWM():
+class RCOutput():
     SYSFS_PWM_PATH_BASE = "/sys/class/pwm/pwmchip0/"
     SYSFS_PWM_EXPORT_PATH = "/sys/class/pwm/pwmchip0/export"
     SYSFS_PWM_UNEXPORT_PATH = "/sys/class/pwm/pwmchip0/unexport"

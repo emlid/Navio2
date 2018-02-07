@@ -1,12 +1,20 @@
-import sys
-
-import navio.leds
 import time
-import navio.util
+import os
 
-navio.util.check_apm()
+import navio.Common.util
+if navio.Common.util.get_navio_version() == "NAVIO2":
+    import navio.Navio2.Led as Led
+else:
+    import navio.Navio.Led as Led
 
-led = navio.leds.Led()
+
+if (os.getuid() != 0):
+    print "Not root. Please, launch like this: sudo python LED.py"
+    exit(-1)
+
+navio.Common.util.check_apm()
+
+led = Led()
 
 led.setColor('Yellow')
 print "LED is yellow"
@@ -37,3 +45,4 @@ while (True):
     led.setColor('Yellow')
     print "LED is yellow"
     time.sleep(1)
+

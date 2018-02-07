@@ -15,4 +15,4 @@ class ADC():
         value = self.channels[ch].read()
         position = self.channels[ch].seek(0, 0)
         return float(value[:-1])
-        
+
