@@ -29,8 +29,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import time
 
 from smbus import SMBus
+import spidev
+
 
 class MS5611:
+
+	class SPIBus():
+		def __init__(self, SPI_bus_number, SPI_dev_number):
+			self.bus = spidev.SpiDev()
+			self.SPI_bus_number = SPI_bus_number
+			self.SPI_dev_number = SPI_dev_number
+
+		def open(self):
+			self.bus.open(self.SPI_bus_number, self.SPI_dev_number)
+			self.bus.max_speed_hz=1000000
+
+		def write_register(self, reg_address, data = 0x00):
+			self.open()
+			tx = [reg_address, data]
+			rx = self.bus.xfer2(tx)
+			self.bus.close()
+			return rx
+
+		def read_registers(self, reg_address, length=3):
+			self.open()
+			tx = [0] * (length + 1)
+			tx[0] = reg_address
+			rx = self.bus.xfer2(tx)
+			self.bus.close()
+			return rx[1:len(rx)]
+
+	class I2CBus():
+		def __init__(self, I2C_bus_number, address):
+			self.bus = SMBus(I2C_bus_number)
+			self.address = address
+
+		def write_register(self, reg_address, device_address = None):
+			device_address = self.address
+			return self.bus.write_byte(device_address, reg_address)
+
+		def read_registers(self, reg_address, device_address = None):
+			device_address = self.address
+			return self.bus.read_i2c_block_data(device_address, reg_address)
 
 	__MS5611_ADDRESS_CSB_LOW  = 0x76
 	__MS5611_ADDRESS_CSB_HIGH = 0x77
@@ -60,9 +100,9 @@ class MS5611:
 	__MS5611_RA_D2_OSR_2048   = 0x56
 	__MS5611_RA_D2_OSR_4096   = 0x58
 
-	def __init__(self, I2C_bus_number = 1, address = 0x77):
-		self.bus = SMBus(I2C_bus_number)
-		self.address = address
+	def __init__(self, I2C_bus_number = 1, address = 0x77, SPI_bus_number = 0, SPI_dev_number = 0, bus = "I2C"):
+		self.bus = self.I2CBus(I2C_bus_number, address) if bus == "I2C" else  \
+                                 self.SPIBus(SPI_bus_number, SPI_dev_number)
 		self.C1 = 0
 		self.C2 = 0
 		self.C3 = 0
@@ -78,17 +118,17 @@ class MS5611:
 		## The MS6511 Sensor stores 6 values in the EPROM memory that we need in order to calculate the actual temperature and pressure
 		## These values are calculated/stored at the factory when the sensor is calibrated.
 		##      I probably could have used the read word function instead of the whole block, but I wanted to keep things consistent.
-		C1 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C1) #Pressure Sensitivity
+		C1 = self.bus.read_registers(self.__MS5611_RA_C1) #Pressure Sensitivity
 		#time.sleep(0.05)
-		C2 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C2) #Pressure Offset
+		C2 = self.bus.read_registers(self.__MS5611_RA_C2) #Pressure Offset
 		#time.sleep(0.05)
-		C3 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C3) #Temperature coefficient of pressure sensitivity
+		C3 = self.bus.read_registers(self.__MS5611_RA_C3) #Temperature coefficient of pressure sensitivity
 		#time.sleep(0.05)
-		C4 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C4) #Temperature coefficient of pressure offset
+		C4 = self.bus.read_registers(self.__MS5611_RA_C4) #Temperature coefficient of pressure offset
 		#time.sleep(0.05)
-		C5 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C5) #Reference temperature
+		C5 = self.bus.read_registers(self.__MS5611_RA_C5) #Reference temperature
 		#time.sleep(0.05)
-		C6 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_C6) #Temperature coefficient of the temperature
+		C6 = self.bus.read_registers(self.__MS5611_RA_C6) #Temperature coefficient of the temperature
 
 		## Again here we are converting the 2 8bit packages into a single decimal
 		self.C1 = C1[0] * 256.0 + C1[1]
@@ -101,17 +141,17 @@ class MS5611:
 		self.update()
 
 	def refreshPressure(self, OSR = __MS5611_RA_D1_OSR_4096):
-		self.bus.write_byte(self.address, OSR)
+		self.bus.write_register(OSR)
 
 	def refreshTemperature(self, OSR = __MS5611_RA_D2_OSR_4096):
-		self.bus.write_byte(self.address, OSR)
+		self.bus.write_register(OSR)
 
 	def readPressure(self):
-		D1 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_ADC)
+		D1 = self.bus.read_registers(self.__MS5611_RA_ADC)
 		self.D1 = D1[0] * 65536 + D1[1] * 256.0 + D1[2]
 
 	def readTemperature(self):
-		D2 = self.bus.read_i2c_block_data(self.address, self.__MS5611_RA_ADC)
+		D2 = self.bus.read_registers(self.__MS5611_RA_ADC)
 		self.D2 = D2[0] * 65536 + D2[1] * 256.0 + D2[2]
 
 	def calculatePressureAndTemperature(self):
