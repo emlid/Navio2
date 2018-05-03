@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="navio2",
-    version="0.1.5",
+    version="1.0.0",
     license="BSD",
     description="Navio 2 device drivers",
     author="Georgii Staroselskii",
