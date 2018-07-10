@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Ublox.h"
 
+#define PREAMBLE_OFFSET 2
 // class UBXScanner
 
 UBXScanner::UBXScanner()
@@ -316,7 +317,7 @@ int Ublox::testConnection()
         std::cerr << "Could not configure ublox over SPI\n";
     }
 
-    while (count < buffer_length/2)
+    while (count < UBX_BUFFER_LENGTH/2)
     {
         // From now on, we will send zeroes to the receiver, which it will ignore
         // However, we are simultaneously getting useful information from it
@@ -344,6 +345,55 @@ int Ublox::testConnection()
     }
 
     return 0;
+}
+
+int Ublox::configureSolutionRate(std::uint16_t meas_rate,
+                           std::uint16_t nav_rate,
+                           std::uint16_t timeref)
+{
+    CfgNavRate msg;
+    msg.measure_rate = meas_rate;
+    msg.nav_rate     = nav_rate;
+    msg.timeref      = timeref;
+
+    _sendMessage(CLASS_CFG, MSG_CFG_RATE, &msg, sizeof(CfgNavRate));
+}
+
+int Ublox::_sendMessage(std::uint8_t msg_class, std::uint8_t msg_id, void *msg, std::uint16_t size)
+{
+    unsigned char buffer[UBX_BUFFER_LENGTH];
+
+    UbxHeader header;
+    header.preamble1 = PREAMBLE1;
+    header.preamble2 = PREAMBLE2;
+    header.msg_class = msg_class;
+    header.msg_id    = msg_id;
+    header.length    = size;
+
+    int offset = _spliceMemory(buffer, &header, sizeof(UbxHeader));
+    offset = _spliceMemory(buffer, msg, size, offset);
+
+    auto checksum = _calculateCheckSum(buffer, offset);
+    offset = _spliceMemory(buffer, &checksum, sizeof(CheckSum), offset);
+
+    return SPIdev::transfer(spi_device_name.c_str(), buffer, nullptr, offset, 200000);
+}
+
+int Ublox::_spliceMemory(unsigned char *dest, const void * const src, std::size_t size, int dest_offset)
+{
+    std::memmove(dest + dest_offset, src, size);
+    return dest_offset + size;
+}
+
+Ublox::CheckSum Ublox::_calculateCheckSum(unsigned char *message, std::size_t size) {
+    CheckSum checkSum;
+    checkSum.CK_A = checkSum.CK_B = 0;
+
+    for (int i = PREAMBLE_OFFSET; i < size; i++) {
+        checkSum.CK_A += message[i];
+        checkSum.CK_B += checkSum.CK_A;
+    }
+    return checkSum;
 }
 
 int Ublox::decodeMessages()
@@ -450,7 +500,7 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                 int count = 0;
                 unsigned char to_gps_data = 0x00, from_gps_data = 0x00;
 
-                while (count < buffer_length/2)
+                while (count < UBX_BUFFER_LENGTH/2)
                 {
                     // From now on, we will send zeroes to the receiver, which it will ignore
                     // However, we are simultaneously getting useful information from it
@@ -501,7 +551,7 @@ int Ublox::decodeSingleMessage(message_t msg, std::vector<double>& position_data
                 int count = 0;
                 unsigned char to_gps_data = 0x00, from_gps_data = 0x00;
 
-                while (count < buffer_length/2)
+                while (count < UBX_BUFFER_LENGTH/2)
                 {
                     // From now on, we will send zeroes to the receiver, which it will ignore
                     // However, we are simultaneously getting useful information from it
