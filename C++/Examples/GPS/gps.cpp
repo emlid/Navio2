@@ -41,6 +41,10 @@ int main(int argc, char *argv[]){
     if(gps.testConnection())
     {
         printf("Ublox test OK\n");
+        if (!gps.configureSolutionRate(1000))
+        {
+            printf("Setting new rate: FAILED\n");
+        }
 
         // gps.decodeMessages();
         // You can use this function to decode all messages, incoming from the GPS receiver. The function starts an infinite loop.
