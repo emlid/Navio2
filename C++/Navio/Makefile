@@ -1,4 +1,4 @@
-CXX = g++
+CXX ?= g++
 CFLAGS = -std=c++11 -Wno-psabi -c -I .
 
 SRC=$(wildcard */*.cpp)
