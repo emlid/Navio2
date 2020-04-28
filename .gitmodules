@@ -1,0 +1,3 @@
+[submodule "C++/Navio/pigpio"]
+	path = C++/Navio/pigpio
+	url = https://github.com/joan2937/pigpio.git
