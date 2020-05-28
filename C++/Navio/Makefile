@@ -1,5 +1,6 @@
 CXX ?= g++
-CFLAGS = -std=c++11 -Wno-psabi -c -I .
+PIGPIO_PATH ?= pigpio
+CFLAGS = -std=c++11 -Wno-psabi -c -I . -I$(PIGPIO_PATH)
 
 SRC=$(wildcard */*.cpp)
 OBJECTS = $(SRC:.cpp=.o) 
@@ -7,8 +8,14 @@ OBJECTS = $(SRC:.cpp=.o)
 %.o: %.cpp
 	$(CXX) $(CFLAGS) -o $@ $< 
 
-all: $(OBJECTS)
+.PHONY: get_deps clean
+
+all: get_deps $(OBJECTS)
 	ar rcs libnavio.a $(OBJECTS)
+
+get_deps:
+	bash get_dependencies.sh
 
 clean:
 	rm -f */*.o *.a
+	$(MAKE) -C pigpio clean
