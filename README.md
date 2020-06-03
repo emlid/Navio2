@@ -11,7 +11,7 @@ Collection of drivers and examples for Navio 2 - autopilot shield for Raspberry 
 
 Basic examples showing how to work with Navio's onboard devices using C++.
 
-* AccelGyroMag 
+* AccelGyroMag
 * ADC
 * AHRS
 * Barometer
@@ -44,7 +44,7 @@ Basic examples showing how to work with Navio's onboard devices using Python.
 * Servo
 
 
-### Utilities 
+### Utilities
 
 Applications and utilities for Navio.
 
@@ -52,9 +52,13 @@ Applications and utilities for Navio.
 * U-blox SPI to PTY bridge utility
 * U-blox SPI to TCP bridge utility
 
-### Problem with pigpio.h
+### Cross-compilation
 
-If you have got error: `fatal error: pigpio.h: No such file or directory`, install `pigpio` by commands:
+#### Requirements
 
-    sudo apt-get update
-    sudo apt-get install pigpio
+* Install the toolchain `gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf` (`sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf` for Debian based systems)
+
+#### Usage
+
+* `export CXX=arm-linux-gnueabihf-g++`
+* Compile the examples via `make`
