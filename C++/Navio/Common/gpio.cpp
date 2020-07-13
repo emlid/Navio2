@@ -37,7 +37,7 @@ using namespace Navio;
 
 Pin::Pin(uint8_t pin):
     _pin(pin),
-    _gpio(NULL), 
+    _gpio(NULL),
     _mode(GpioModeInput)
 {
 }
@@ -49,7 +49,7 @@ Pin::~Pin()
     }
 }
 
-bool Pin::_deinit() 
+bool Pin::_deinit()
 {
     if (munmap(const_cast<uint32_t *>(_gpio), BLOCK_SIZE) < 0) {
         warnx("unmap failed");
@@ -92,9 +92,9 @@ bool Pin::init()
 
     /* No need to keep mem_fd open after mmap */
     if (close(mem_fd) < 0) {
-        warn("cannot close mem_fd");   
+        warn("cannot close mem_fd");
         return false;
-    } 
+    }
 
     _gpio = reinterpret_cast<volatile uint32_t *>(gpio_map); // Always use volatile pointer!
 
