@@ -9,6 +9,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <stdexcept>
 
 #include "gpio.h"
 
@@ -31,7 +35,7 @@
 #define GPIO_SET_LOW        *(_gpio+10) // clears bits which are 1
 #define GPIO_GET(g)         (*(_gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
 
-#define MAX_SIZE_LINE       50
+#define SYSFS_RPI_MODEL_FILE_PATH "/sys/firmware/devicetree/base/model"
 
 using namespace Navio;
 
@@ -66,14 +70,32 @@ bool Pin::init()
         return false;
     }
 
-    uint32_t address;
-    int version = getRaspberryPiVersion();
-    if (version == 1) {
-        address = GPIO_BASE(BCM2835_PERI_BASE);
-    } else if (version == 2) {
-        address = GPIO_BASE(BCM2837_PERI_BASE);
-    } else if (version == 3) {
-        address = GPIO_BASE(BCM2837_PERI_BASE);
+    int rpi_version = 0;
+
+    try {
+        rpi_version = getRaspberryPiVersion();
+    }
+    catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+
+    uintptr_t address = 0;
+
+    switch (rpi_version) {
+        case 1:
+            address = GPIO_BASE(BCM2835_PERI_BASE);
+            break;
+        case 2:
+        case 3:
+            address = GPIO_BASE(BCM2837_PERI_BASE);
+            break;
+        case 4:
+            address = GPIO_BASE(BCM2711_PERI_BASE);
+            break;
+        default:
+            std::cerr << "Unexpected version: " << rpi_version << std::endl;
+            return false;
     }
 
     void *gpio_map = mmap(
@@ -139,35 +161,19 @@ void Pin::toggle()
 
 int Pin::getRaspberryPiVersion() const
 {
-    char buffer[MAX_SIZE_LINE];
-    const char* hardware_description_entry = "Hardware";
-    const char* v1 = "BCM2708";
-    const char* v2 = "BCM2709";
-    const char* v3 = "BCM2835";
-    char* flag;
-    FILE* fd;
+    std::string buffer;
+    std::ifstream f(SYSFS_RPI_MODEL_FILE_PATH);
 
-    fd = fopen("/proc/cpuinfo", "r");
-
-    while (fgets(buffer, MAX_SIZE_LINE, fd) != NULL) {
-        flag = strstr(buffer, hardware_description_entry);
-
-        if (flag != NULL) {
-            if (strstr(buffer, v3) != NULL) {
-                fclose(fd);
-                return 3;
-            } else if (strstr(buffer, v2) != NULL) {
-                fclose(fd);
-                return 2;
-            } else if (strstr(buffer, v1) != NULL) {
-                fclose(fd);
-                return 1;
-            }
-        }
+    if (!f) {
+        throw std::runtime_error(std::string("Could not open ") + SYSFS_RPI_MODEL_FILE_PATH);
     }
 
-    /* defaults to 1 */
-    fprintf(stderr, "Could not detect RPi version, defaulting to 1\n");
-    fclose(fd);
-    return 1;
+    while (f >> buffer) {
+        try {
+            return stoi(buffer);
+        }
+        catch(std::invalid_argument) {}
+    }
+
+    throw std::runtime_error("Could not read RPi version");
 }
