@@ -16,9 +16,9 @@
 #define HIGH                1
 
 /* Raspberry Pi GPIO memory */
-#define BCM2708_PERI_BASE   0x20000000
-#define BCM2709_PERI_BASE   0x3F000000
-#define BCM2835_PERI_BASE   0x3F000000
+#define BCM2835_PERI_BASE   0x20000000
+#define BCM2837_PERI_BASE   0x3F000000
+#define BCM2711_PERI_BASE   0xFE000000
 #define GPIO_BASE(address)  (address + 0x200000)
 #define PAGE_SIZE           (4*1024)
 #define BLOCK_SIZE          (4*1024)
@@ -69,11 +69,11 @@ bool Pin::init()
     uint32_t address;
     int version = getRaspberryPiVersion();
     if (version == 1) {
-        address = GPIO_BASE(BCM2708_PERI_BASE);
-    } else if (version == 2) {
-        address = GPIO_BASE(BCM2709_PERI_BASE);
-    } else if (version == 3) {
         address = GPIO_BASE(BCM2835_PERI_BASE);
+    } else if (version == 2) {
+        address = GPIO_BASE(BCM2837_PERI_BASE);
+    } else if (version == 3) {
+        address = GPIO_BASE(BCM2837_PERI_BASE);
     }
 
     void *gpio_map = mmap(
