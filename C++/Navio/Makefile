@@ -18,4 +18,6 @@ get_deps:
 
 clean:
 	rm -f */*.o *.a
-	$(MAKE) -C pigpio clean
+	if [ -e $(PIGPIO_PATH)/Makefile ] ; then \
+		$(MAKE) -C $(PIGPIO_PATH) clean ;\
+	fi
