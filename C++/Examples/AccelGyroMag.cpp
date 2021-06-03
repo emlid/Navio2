@@ -76,6 +76,7 @@ std::string get_sensor_name(int argc, char *argv[])
         return "mpu";
     }
 
+    return std::string();
 }
 //=============================================================================
 int main(int argc, char *argv[])
