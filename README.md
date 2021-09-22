@@ -71,4 +71,4 @@ Applications and utilities for Navio.
   - `$ sudo make install`
 * Running example
   - `$ cd C++/Examples`
-  - `$ g++ AccelGyroMag.cpp -o -lnavio`
+  - `$ g++ AccelGyroMag.cpp -o out -lnavio`
