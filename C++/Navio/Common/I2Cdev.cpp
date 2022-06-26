@@ -375,18 +375,18 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
 
     if (length > 127) {
         fprintf(stderr, "Byte write count (%d) > 127\n", length);
-        return(FALSE);
+        return(false);
     }
 
     fd = open(I2CDEV , O_RDWR);
     if (fd < 0) {
         fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
-        return(FALSE);
+        return(false);
     }
     if (ioctl(fd, I2C_SLAVE, devAddr) < 0) {
         fprintf(stderr, "Failed to select device: %s\n", strerror(errno));
         close(fd);
-        return(FALSE);
+        return(false);
     }
     buf[0] = regAddr;
     memcpy(buf+1,data,length);
@@ -394,15 +394,15 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
     if (count < 0) {
         fprintf(stderr, "Failed to write device(%d): %s\n", count, ::strerror(errno));
         close(fd);
-        return(FALSE);
+        return(false);
     } else if (count != length+1) {
         fprintf(stderr, "Short write to device, expected %d, got %d\n", length+1, count);
         close(fd);
-        return(FALSE);
+        return(false);
     }
     close(fd);
 
-    return TRUE;
+    return true;
 }
 
 /** Write multiple words to a 16-bit device register.
@@ -422,18 +422,18 @@ bool I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16
 
     if (length > 63) {
         fprintf(stderr, "Word write count (%d) > 63\n", length);
-        return(FALSE);
+        return(false);
     }
 
     fd = open(I2CDEV, O_RDWR);
     if (fd < 0) {
         fprintf(stderr, "Failed to open device: %s\n", strerror(errno));
-        return(FALSE);
+        return(false);
     }
     if (ioctl(fd, I2C_SLAVE, devAddr) < 0) {
         fprintf(stderr, "Failed to select device: %s\n", strerror(errno));
         close(fd);
-        return(FALSE);
+        return(false);
     }
     buf[0] = regAddr;
     for (i = 0; i < length; i++) {
@@ -444,14 +444,14 @@ bool I2Cdev::writeWords(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16
     if (count < 0) {
         fprintf(stderr, "Failed to write device(%d): %s\n", count, ::strerror(errno));
         close(fd);
-        return(FALSE);
+        return(false);
     } else if (count != length*2+1) {
         fprintf(stderr, "Short write to device, expected %d, got %d\n", length+1, count);
         close(fd);
-        return(FALSE);
+        return(false);
     }
     close(fd);
-    return TRUE;
+    return true;
 }
 
 /** Default timeout value for read operations.
