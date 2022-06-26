@@ -1,3 +1,6 @@
 *.o
 *.a
 /C++/Build
+build/
+C++/.idea/
+C++/cmake-build-release/

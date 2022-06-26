@@ -63,3 +63,12 @@ Applications and utilities for Navio.
 
 * `export CXX=arm-linux-gnueabihf-g++`
 * Compile the examples via `make`
+* CMake install
+  - `$ cd  C++/Navio`
+  - `$ mkdir build && cd build`
+  - `$ cmake ..`
+  - `$ make`
+  - `$ sudo make install`
+* Running example
+  - `$ cd C++/Examples`
+  - `$ g++ AccelGyroMag.cpp -o out -lnavio`
